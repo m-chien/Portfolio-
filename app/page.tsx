@@ -2,8 +2,9 @@
 
 import Image, { type StaticImageData } from "next/image";
 import {
-  ArrowDownRight, ArrowUpRight, CirclePlay, Code2, ExternalLink, FileDown, Github, Globe2, Languages,
-  Mail, Maximize2, Menu, Moon, MoveUpRight, Sparkles, Sun, Terminal, X,
+  ArrowDownRight, ArrowUpRight, Check, CirclePlay, Clock, Code2, Command, Copy, ExternalLink,
+  FileDown, Github, Globe2, GraduationCap, Languages, Mail, MapPin, Maximize2, Menu, Moon,
+  MoveUpRight, Search, Sparkles, Sun, Terminal, Trophy, X,
 } from "lucide-react";
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
@@ -125,7 +126,7 @@ const projectFilters = {
 
 const copy = {
   en: {
-    nav: ["Work", "Story", "Awards", "Contact"], talk: "Let's talk", menu: "Open menu", light: "Use light mode", dark: "Use dark mode", switchLanguage: "Chuyển sang tiếng Việt",
+    nav: ["Work", "Roadmap", "Story", "Awards", "Contact"], talk: "Let's talk", menu: "Open menu", light: "Use light mode", dark: "Use dark mode", switchLanguage: "Chuyển sang tiếng Việt",
     availability: "Seeking Software / Web Dev Internship", heroTitle: "THINK DEEP.", heroHighlight: "BUILD SMART.", heroEnd: "SCALE FURTHER.",
     intro: "Tran Minh Chien — an Information Technology student at The University of Danang – University of Technology and Education, building reliable web experiences and intelligent systems.", play: "Play projects", contact: "Contact me", downloadCV: "Download CV", scroll: "Scroll to explore",
     profileRole: "IT Student · UTE, Da Nang", profileStatus: "Building with intent", dashboardLabel: "DIGITAL PROFILE / LIVE", dashboardTitle: "Experience score", dashboardSystem: "Systems", dashboardSignals: ["Interface", "Data", "Motion"], dashboardSignal: "Signal", optimal: "Optimal", dashboardPulse: "PROJECT PULSE", dashboardBuild: "BUILD STATUS", dashboardDeploy: "Deploying ideas",
@@ -138,12 +139,19 @@ const copy = {
       { type: "Personal project · Real-time web", name: "Real-time Connect", badge: "Personal project", description: "A personal real-time messaging and video-calling application built to make conversations immediate, clear, and seamless." },
       { type: "Personal project · AI workspace", name: "AI Requirements Analyst", badge: "Personal project", description: "A personal AI-powered workspace for organizing requirements, clarifying questions, and keeping project work moving." },
     ],
+    journeyKicker: "Career & Academic Roadmap", journeyTitle: "From Curiosity to", journeyHighlight: "Breakthroughs.", journeyText: "Key milestones in software engineering, competitive hackathons, and high-impact innovation.",
+    milestones: [
+      { period: "2023 – 2024", role: "Core Foundations & Algorithmic Thinking", organization: "The University of Danang – UTE", description: "Deep-dived into Data Structures & Algorithms, Object-Oriented Programming (Java), and Database Design (SQL Server / PostgreSQL). Built foundational web systems and developed clean architectural habits.", tags: ["Java", "OOP", "SQL Server", "Algorithms"], highlight: "Academic Core" },
+      { period: "2024 – 2025", role: "Full-stack Systems & Competitive Podiums", organization: "Global Hackathon & National Competitions", description: "Competed in the global 'Agents, Everywhere' Hackathon securing both Team Podium and Runner-up. Contributed Full-stack Next.js and Java logic for TreeAffiliate, ChienCINEMA, and advanced to the Top 8 nationwide in VTV3's 'New Generation Students'.", tags: ["Next.js", "Java Spring", "Full-stack", "VTV3 Top 8"], highlight: "Top 8 Nationwide" },
+      { period: "2025 – 2026", role: "Deep Tech Research & Ecosystem Innovation", organization: "SignSound Ecosystem · Assistive AI", description: "Co-created SignSound — an assistive communication ecosystem pairing AR smart glasses with AI-powered video conferencing. Won First Prize at the SURF 2026 Startup Innovation Festival and the Special Prize in Student Scientific Research.", tags: ["Assistive AI", "AR Glasses", "SURF First Prize", "Research"], highlight: "SURF 2026 Champion" },
+      { period: "Present & Target", role: "Software / Web Developer Internship", organization: "Ready for High-Impact Industry Teams", description: "Seeking a Software / Web Development internship to contribute clean, reliable code, build production-ready systems, and push intelligent digital products further.", tags: ["Seeking Internship", "Full-stack Ready", "Fast Learner"], highlight: "Available Now" },
+    ],
     storyKicker: "The person behind the pixels", storyTitle: "Technology feels most powerful when it makes people feel", storyHighlight: "understood.", storyText: "I'm an Information Technology student at The University of Danang – University of Technology and Education, focused on software and web development. I enjoy taking an idea from interface decisions through backend logic and database design, then refining it into a product that feels clear and useful.", portraitLabel: "Tran Minh Chien", portraitNote: "Information Technology · UTE, Da Nang", aboutTags: ["Seeking Internship", "Next.js + Java", "SQL Server / PostgreSQL", "Full-stack Development"],
     awardsKicker: "Competition logbook", awardsTitle: "Building, learning,", awardsHighlight: "showing up.", awardsText: "Moments from hackathons, innovation festivals, and research competitions that shaped how I collaborate and create.", awards: [["SURF 2026", "First Prize · Student category"], ["Sinh Vien The He Moi", "Top 8 Nationwide · VTV3"], ["Agents, Everywhere", "Global Hackathon · Team podium"], ["Agents, Everywhere", "Global Hackathon · Runner up"], ["SURF 2026", "Innovation Startup Festival"], ["Student Research", "Special Prize · 2025–2026"]],
     footerStatus: "Available for internships & collaborations", footerTitle: "Let's make the next", footerHighlight: "frame", footerEnd: "count.", start: "Start a conversation", built: "Built in motion", close: "Close image preview",
   },
   vi: {
-    nav: ["Dự án", "Câu chuyện", "Thành tích", "Liên hệ"], talk: "Liên hệ", menu: "Mở menu", light: "Chuyển sang giao diện sáng", dark: "Chuyển sang giao diện tối", switchLanguage: "Switch to English",
+    nav: ["Dự án", "Lộ trình", "Câu chuyện", "Thành tích", "Liên hệ"], talk: "Liên hệ", menu: "Mở menu", light: "Chuyển sang giao diện sáng", dark: "Chuyển sang giao diện tối", switchLanguage: "Switch to English",
     availability: "Đang tìm cơ hội thực tập Software / Web Developer", heroTitle: "TƯ DUY SÂU.", heroHighlight: "XÂY DỰNG THÔNG MINH.", heroEnd: "VƯƠN XA HƠN.",
     intro: "Trần Minh Chiến — sinh viên ngành Công nghệ Thông tin tại Đại học Sư phạm Kỹ thuật – Đại học Đà Nẵng, xây dựng những trải nghiệm web đáng tin cậy và hệ thống thông minh.", play: "Xem dự án", contact: "Liên hệ với mình", downloadCV: "Tải CV", scroll: "Cuộn để khám phá",
     profileRole: "Sinh viên CNTT · UTE Đà Nẵng", profileStatus: "Xây dựng có chủ đích", dashboardLabel: "HỒ SƠ SỐ / TRỰC TUYẾN", dashboardTitle: "Điểm trải nghiệm", dashboardSystem: "Năng lực", dashboardSignals: ["Giao diện", "Dữ liệu", "Chuyển động"], dashboardSignal: "Tín hiệu", optimal: "Tối ưu", dashboardPulse: "NHỊP DỰ ÁN", dashboardBuild: "TRẠNG THÁI XÂY DỰNG", dashboardDeploy: "Triển khai ý tưởng",
@@ -155,6 +163,13 @@ const copy = {
       { type: "Thương mại điện tử · Web responsive", name: "SuperSports", badge: "Trải nghiệm bán lẻ", description: "Cửa hàng thể thao giàu năng lượng với điều hướng rõ ràng và tìm kiếm sản phẩm nhanh chóng." },
       { type: "Dự án cá nhân · Web thời gian thực", name: "Real-time Connect", badge: "Dự án cá nhân", description: "Ứng dụng nhắn tin và gọi video thời gian thực cá nhân, tập trung vào trải nghiệm trò chuyện trực quan, liền mạch." },
       { type: "Dự án cá nhân · Không gian AI", name: "AI Requirements Analyst", badge: "Dự án cá nhân", description: "Không gian làm việc hỗ trợ bởi AI do mình phát triển để quản lý yêu cầu, câu hỏi làm rõ và thúc đẩy tiến độ dự án." },
+    ],
+    journeyKicker: "Lộ trình học tập & Dấu mốc", journeyTitle: "Từ nền tảng kỹ thuật đến", journeyHighlight: "bứt phá thực chiến.", journeyText: "Những dấu mốc định hình tư duy giải quyết vấn đề, kinh nghiệm xây dựng sản phẩm và thành tích thi đấu.",
+    milestones: [
+      { period: "2023 – 2024", role: "Nền tảng Kỹ thuật & Tư duy Thuật toán", organization: "ĐH Sư phạm Kỹ thuật – ĐH Đà Nẵng (UTE)", description: "Nghiên cứu chuyên sâu Cấu trúc dữ liệu & Giải thuật, Lập trình hướng đối tượng (Java), Cơ sở dữ liệu quan hệ (SQL Server, PostgreSQL). Xây dựng ứng dụng web nền tảng và rèn luyện thói quen clean code.", tags: ["Java", "OOP", "SQL Server", "Thuật toán"], highlight: "Nền tảng học thuật" },
+      { period: "2024 – 2025", role: "Hệ thống Full-stack & Đấu trường Cuộc thi", organization: "Hackathon Quốc tế & Sân chơi Toàn quốc", description: "Tham gia Hackathon toàn cầu 'Agents, Everywhere' đạt Podium và giải Á quân. Đóng góp full-stack Next.js và Java cho TreeAffiliate, ChienCINEMA, đồng thời xuất sắc lọt vào Top 8 Toàn quốc chương trình 'Sinh viên Thế hệ mới' trên VTV3.", tags: ["Next.js", "Java Spring", "Full-stack", "VTV3 Top 8"], highlight: "Top 8 Toàn quốc" },
+      { period: "2025 – 2026", role: "Nghiên cứu Công nghệ cao & Đổi mới Sáng tạo", organization: "Hệ sinh thái SignSound · Assistive AI", description: "Đồng sáng lập & phát triển SignSound — giải pháp hỗ trợ giao tiếp tích hợp kính AR thông minh và họp video AI. Xuất sắc đạt Giải Nhất cuộc thi khởi nghiệp đổi mới sáng tạo SURF 2026 và Giải Đặc biệt Nghiên cứu Khoa học Sinh viên.", tags: ["Assistive AI", "Kính AR", "SURF Giải Nhất", "NCKH"], highlight: "SURF 2026 Quán quân" },
+      { period: "Hiện tại & Mục tiêu", role: "Sẵn sàng Thực tập Software / Web Developer", organization: "Đóng góp giá trị thực tế cho Doanh nghiệp", description: "Sẵn sàng gia nhập đội ngũ kỹ thuật với vai trò thực tập sinh Web / Software Developer. Mong muốn đem tư duy giải quyết vấn đề, tinh thần trách nhiệm và tốc độ nắm bắt công nghệ mới vào các sản phẩm thực tế.", tags: ["Tìm kiếm thực tập", "Full-stack", "Học hỏi nhanh"], highlight: "Sẵn sàng ngay" },
     ],
     storyKicker: "Con người phía sau những pixel", storyTitle: "Công nghệ mạnh mẽ nhất khi khiến con người cảm thấy được", storyHighlight: "thấu hiểu.", storyText: "Mình là sinh viên ngành Công nghệ Thông tin tại Đại học Sư phạm Kỹ thuật – Đại học Đà Nẵng, định hướng Software và Web Development. Mình thích đi cùng một ý tưởng từ quyết định giao diện, logic backend và thiết kế cơ sở dữ liệu đến khi nó trở thành một sản phẩm rõ ràng, hữu ích.", portraitLabel: "Trần Minh Chiến", portraitNote: "Công nghệ Thông tin · UTE Đà Nẵng", aboutTags: ["Tìm cơ hội thực tập", "Next.js + Java", "SQL Server / PostgreSQL", "Phát triển Full-stack"],
     awardsKicker: "Dấu ấn cuộc thi", awardsTitle: "Xây dựng, học hỏi,", awardsHighlight: "không ngừng xuất hiện.", awardsText: "Những khoảnh khắc từ hackathon, lễ hội đổi mới sáng tạo và cuộc thi nghiên cứu đã định hình cách mình hợp tác và kiến tạo.", awards: [["SURF 2026", "Giải Nhất · Bảng sinh viên"], ["Sinh viên Thế hệ mới", "Top 8 Sinh viên Thế hệ mới · VTV3"], ["Agents, Everywhere", "Global Hackathon · Giải cùng đội"], ["Agents, Everywhere", "Global Hackathon · Á quân"], ["SURF 2026", "Lễ hội khởi nghiệp đổi mới sáng tạo"], ["Nghiên cứu sinh viên", "Giải Đặc biệt · 2025–2026"]],
@@ -193,12 +208,133 @@ function IconButton({ label, children, onClick }: { label: string; children: Rea
   return <button type="button" aria-label={label} title={label} onClick={onClick} className="control-button grid h-9 w-9 place-items-center rounded-lg transition hover:-translate-y-0.5">{children}</button>;
 }
 
-function Nav({ language, setLanguage, theme, setTheme }: { language: Language; setLanguage: (language: Language) => void; theme: Theme; setTheme: (theme: Theme) => void }) {
+function Nav({
+  language,
+  setLanguage,
+  theme,
+  setTheme,
+  onOpenCmd,
+}: {
+  language: Language;
+  setLanguage: (language: Language) => void;
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+  onOpenCmd: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const t = copy[language];
-  const links = [[t.nav[0], "#projects"], [t.nav[1], "#about"], [t.nav[2], "#awards"], [t.nav[3], "#contact"]] as const;
-  return <header className="fixed left-0 right-0 top-0 z-50 px-4 pt-4 sm:px-6 lg:px-10"><nav className="surface nav-glass mx-auto flex max-w-7xl items-center justify-between rounded-2xl px-3 py-2.5 sm:px-5"><a href="#top" className="group flex items-center gap-2 text-sm font-semibold tracking-[.18em] text-[var(--text)]"><span className="grid h-7 w-7 place-items-center rounded-lg bg-emerald-400 text-[10px] font-black text-[#022013] shadow-[0_0_12px_rgba(52,211,153,0.4)] transition-transform group-hover:scale-105">TC</span><span className="hidden sm:block">CHIEN / 26</span></a><div className="hidden items-center gap-6 lg:flex">{links.map(([label, href]) => <a key={label} href={href} className="muted text-[11px] font-semibold uppercase tracking-[.14em] transition hover:text-[var(--text)]">{label}</a>)}</div><div className="flex items-center gap-1 sm:gap-2"><IconButton label={theme === "dark" ? t.light : t.dark} onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>{theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}</IconButton><button type="button" aria-label={t.switchLanguage} onClick={() => setLanguage(language === "en" ? "vi" : "en")} className="control-button flex h-9 items-center gap-1 rounded-lg px-2 text-[11px] font-bold"><Languages size={15} /><span>{language === "en" ? "VI" : "EN"}</span></button><a href="#contact" className="emerald-link hidden items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold sm:flex transition hover:-translate-y-0.5">{t.talk}<ArrowUpRight size={14} /></a><IconButton label={t.menu} onClick={() => setOpen(!open)}>{open ? <X size={19} /> : <Menu size={20} />}</IconButton></div></nav><AnimatePresence>{open && <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="surface nav-glass mx-auto mt-2 flex max-w-7xl flex-col rounded-2xl p-3 lg:hidden">{links.map(([label, href]) => <a onClick={() => setOpen(false)} key={label} href={href} className="muted rounded-lg px-3 py-3 text-sm transition hover:bg-black/[.06] hover:text-[var(--text)]">{label}</a>)}</motion.div>}</AnimatePresence></header>;
+  const links = [
+    [t.nav[0], "#projects"],
+    [t.nav[1], "#journey"],
+    [t.nav[2], "#about"],
+    [t.nav[3], "#awards"],
+    [t.nav[4], "#contact"],
+  ] as const;
+  return (
+    <header className="fixed left-0 right-0 top-0 z-50 px-4 pt-4 sm:px-6 lg:px-10">
+      <nav className="surface nav-glass mx-auto flex max-w-7xl items-center justify-between rounded-2xl px-3 py-2.5 sm:px-5">
+        <a href="#top" className="group flex items-center gap-2 text-sm font-semibold tracking-[.18em] text-[var(--text)]">
+          <span className="grid h-7 w-7 place-items-center rounded-lg bg-emerald-400 text-[10px] font-black text-[#022013] shadow-[0_0_12px_rgba(52,211,153,0.4)] transition-transform group-hover:scale-105">
+            TC
+          </span>
+          <span className="hidden sm:block">CHIEN / 26</span>
+        </a>
+
+        <div className="hidden items-center gap-6 lg:flex">
+          {links.map(([label, href]) => (
+            <a
+              key={label}
+              href={href}
+              className="muted text-[11px] font-semibold uppercase tracking-[.14em] transition hover:text-[var(--text)]"
+            >
+              {label}
+            </a>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-1 sm:gap-2">
+          {/* Command Palette Trigger */}
+          <button
+            type="button"
+            onClick={onOpenCmd}
+            aria-label="Command Palette"
+            title={language === "vi" ? "Menu lệnh & Tìm kiếm nhanh (Ctrl + K)" : "Command Palette (Ctrl + K)"}
+            className="control-button hidden sm:flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs text-[var(--muted)] hover:text-[var(--text)] transition"
+          >
+            <Command size={13} className="text-emerald-400" />
+            <span className="font-mono text-[10px] font-semibold tracking-wider">Ctrl K</span>
+          </button>
+
+          <IconButton
+            label={theme === "dark" ? t.light : t.dark}
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          >
+            {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+          </IconButton>
+
+          <button
+            type="button"
+            aria-label={t.switchLanguage}
+            onClick={() => setLanguage(language === "en" ? "vi" : "en")}
+            className="control-button flex h-9 items-center gap-1 rounded-lg px-2 text-[11px] font-bold"
+          >
+            <Languages size={15} />
+            <span>{language === "en" ? "VI" : "EN"}</span>
+          </button>
+
+          <a
+            href="#contact"
+            className="emerald-link hidden items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold sm:flex transition hover:-translate-y-0.5"
+          >
+            {t.talk}
+            <ArrowUpRight size={14} />
+          </a>
+
+          <IconButton label={t.menu} onClick={() => setOpen(!open)}>
+            {open ? <X size={19} /> : <Menu size={20} />}
+          </IconButton>
+        </div>
+      </nav>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className="surface nav-glass mx-auto mt-2 flex max-w-7xl flex-col rounded-2xl p-3 lg:hidden"
+          >
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                onOpenCmd();
+              }}
+              className="mb-2 flex items-center justify-between rounded-lg bg-emerald-500/10 px-3 py-2.5 text-xs font-medium text-emerald-400"
+            >
+              <span className="flex items-center gap-2">
+                <Command size={14} />
+                <span>{language === "vi" ? "Menu lệnh & Tìm kiếm" : "Command Palette"}</span>
+              </span>
+              <span className="font-mono text-[10px] rounded border border-emerald-400/30 px-1.5 py-0.5">Ctrl K</span>
+            </button>
+            {links.map(([label, href]) => (
+              <a
+                onClick={() => setOpen(false)}
+                key={label}
+                href={href}
+                className="muted rounded-lg px-3 py-3 text-sm transition hover:bg-black/[.06] hover:text-[var(--text)]"
+              >
+                {label}
+              </a>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
+  );
 }
+
 
 interface TechNode3D {
   x: number;
@@ -547,16 +683,72 @@ function Interactive3DTechSphere({ language, theme }: { language: Language; them
   );
 }
 
-function Hero({ language, theme }: { language: Language; theme: Theme }) {
+function DaNangClock() {
+  const [time, setTime] = useState<string>("");
+  useEffect(() => {
+    const update = () => {
+      setTime(
+        new Date().toLocaleTimeString("en-US", {
+          timeZone: "Asia/Ho_Chi_Minh",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+        })
+      );
+    };
+    update();
+    const interval = setInterval(update, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <span className="font-mono tabular-nums tracking-normal">
+      {time || "03:00:00"} <span className="text-[9px] opacity-70">UTC+7</span>
+    </span>
+  );
+}
+
+function Hero({
+  language,
+  theme,
+  onCopyEmail,
+}: {
+  language: Language;
+  theme: Theme;
+  onCopyEmail: () => void;
+}) {
   const t = copy[language];
   const isVi = language === "vi";
   return (
     <section id="top" className="relative mx-auto grid min-h-[850px] max-w-7xl items-center gap-10 px-5 pb-24 pt-32 sm:px-7 lg:min-h-screen lg:grid-cols-[1fr_1.1fr] lg:gap-6 lg:px-10">
       <div className="relative z-10">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .6 }} className="availability mb-6 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[.16em]">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]" />
-          {t.availability}
-        </motion.div>
+        <div className="mb-6 flex flex-wrap items-center gap-2.5">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="availability inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[.16em]"
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)] animate-pulse" />
+            {t.availability}
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="surface inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[10px] font-medium text-[var(--muted)]"
+            title={isVi ? "Giờ địa phương Đà Nẵng, Việt Nam" : "Da Nang Local Time, Vietnam"}
+          >
+            <MapPin size={11} className="text-emerald-400" />
+            <span>Đà Nẵng</span>
+            <span className="text-[var(--border)]">·</span>
+            <Clock size={11} className="text-emerald-400" />
+            <DaNangClock />
+          </motion.div>
+        </div>
+
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -586,9 +778,15 @@ function Hero({ language, theme }: { language: Language; theme: Theme }) {
             <CirclePlay size={18} fill="currentColor" />{t.play}
             <ArrowDownRight size={17} className="transition-transform group-hover:translate-y-0.5 group-hover:translate-x-0.5" />
           </a>
-          <a href="#contact" className="surface inline-flex items-center gap-2 rounded-full px-5 py-3.5 text-sm font-semibold transition hover:-translate-y-0.5 hover:border-emerald-400/40">
-            <Mail size={17} />{t.contact}
-          </a>
+          <button
+            type="button"
+            onClick={onCopyEmail}
+            className="surface group inline-flex items-center gap-2 rounded-full px-5 py-3.5 text-sm font-semibold transition hover:-translate-y-0.5 hover:border-emerald-400/40"
+            title="chientranminh355@gmail.com"
+          >
+            <Copy size={16} className="text-emerald-400 transition-transform group-hover:scale-110" />
+            <span>{isVi ? "Sao chép Email" : "Copy Email"}</span>
+          </button>
           <a href="/Tran-Minh-Chien-CV.pdf" download className="surface inline-flex items-center gap-2 rounded-full px-5 py-3.5 text-sm font-semibold transition hover:-translate-y-0.5 hover:border-emerald-400/40">
             <FileDown size={17} />{t.downloadCV}
           </a>
@@ -942,6 +1140,120 @@ function Projects({ language }: { language: Language }) {
   );
 }
 
+function Journey({ language }: { language: Language }) {
+  const t = copy[language];
+
+  const getMilestoneIcon = (index: number) => {
+    switch (index) {
+      case 0:
+        return <GraduationCap size={18} className="text-sky-400" />;
+      case 1:
+        return <Trophy size={18} className="text-amber-400" />;
+      case 2:
+        return <Sparkles size={18} className="text-emerald-400" />;
+      case 3:
+      default:
+        return <Code2 size={18} className="text-emerald-400" />;
+    }
+  };
+
+  return (
+    <section id="journey" className="relative mx-auto max-w-7xl px-5 py-24 sm:px-7 lg:px-10 lg:py-32">
+      <Reveal className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
+            <p className="accent font-mono text-[10px] font-bold uppercase tracking-[.22em]">
+              {t.journeyKicker}
+            </p>
+          </div>
+          <h2 className="mt-4 max-w-2xl text-4xl font-extrabold tracking-[-.065em] sm:text-6xl text-[var(--text)]">
+            {t.journeyTitle} <span className="gradient-text">{t.journeyHighlight}</span>
+          </h2>
+        </div>
+        <p className="muted max-w-xs text-sm leading-6">{t.journeyText}</p>
+      </Reveal>
+
+      {/* Timeline spine and milestone cards */}
+      <div className="relative mt-16 lg:mt-24">
+        {/* Glowing Spine Line */}
+        <div className="absolute left-4 top-4 bottom-4 w-[2px] bg-gradient-to-b from-emerald-400/80 via-emerald-500/40 to-transparent sm:left-6 lg:left-1/2 lg:-translate-x-1/2" />
+
+        <div className="space-y-10 lg:space-y-16">
+          {t.milestones.map((item, idx) => {
+            const isEven = idx % 2 === 0;
+            return (
+              <Reveal
+                key={item.period}
+                delay={idx * 0.1}
+                y={30}
+                className={`relative flex flex-col sm:flex-row ${
+                  isEven ? "lg:flex-row-reverse" : "lg:flex-row"
+                } items-start lg:items-center`}
+              >
+                {/* Center Node / Icon */}
+                <div className="absolute left-4 -translate-x-1/2 sm:left-6 lg:left-1/2 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-emerald-400/50 bg-[var(--page)] shadow-[0_0_16px_rgba(52,211,153,0.3)] transition-transform duration-300 hover:scale-110">
+                  {getMilestoneIcon(idx)}
+                </div>
+
+                {/* Milestone Card */}
+                <div
+                  className={`ml-12 sm:ml-16 lg:ml-0 lg:w-[calc(50%-44px)] ${
+                    isEven ? "lg:mr-auto lg:text-left" : "lg:ml-auto lg:text-left"
+                  }`}
+                >
+                  <div className="surface group relative overflow-hidden rounded-2xl border border-[var(--border)] p-6 transition-all duration-300 hover:border-emerald-500/40 hover:shadow-[0_12px_40px_rgba(0,0,0,0.18)]">
+                    {/* Subtle Corner Glow */}
+                    <div className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-emerald-500/[0.08] blur-2xl group-hover:bg-emerald-500/[0.14] transition-all" />
+
+                    {/* Period and Highlight Badge */}
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="font-mono text-xs font-bold text-emerald-400 tracking-wider">
+                        {item.period}
+                      </span>
+                      <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-0.5 font-mono text-[10px] font-bold text-emerald-300">
+                        {item.highlight}
+                      </span>
+                    </div>
+
+                    {/* Role / Milestone Title */}
+                    <h3 className="mt-3 text-xl font-bold tracking-tight text-[var(--text)] group-hover:text-emerald-300 transition-colors">
+                      {item.role}
+                    </h3>
+
+                    {/* Organization / Context */}
+                    <p className="mt-1 text-xs font-medium text-[var(--muted)] flex items-center gap-1.5">
+                      <span className="h-1 w-1 rounded-full bg-emerald-400" />
+                      {item.organization}
+                    </p>
+
+                    {/* Description */}
+                    <p className="mt-3 text-sm leading-relaxed text-[var(--muted)]">
+                      {item.description}
+                    </p>
+
+                    {/* Tags */}
+                    <div className="mt-4 flex flex-wrap gap-1.5">
+                      {item.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="tech-pill rounded-full px-2.5 py-1 text-[11px] font-medium"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </Reveal>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function About({ language }: { language: Language }) {
   const t = copy[language];
   return <section id="about" className="mx-auto max-w-7xl px-5 py-10 sm:px-7 lg:px-10"><Reveal><div className="surface relative overflow-hidden rounded-3xl px-6 py-8 sm:p-12"><div className="absolute -right-16 -top-16 h-52 w-52 rounded-full bg-[#9a79ff]/15 blur-3xl" /><div className="relative grid gap-8 md:grid-cols-[.42fr_.58fr] md:items-center"><div className="relative mx-auto aspect-[4/5] w-full max-w-[290px] overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--soft)]"><Image src={avatar} alt="Tran Minh Chien portrait" fill sizes="290px" className="object-cover object-[50%_28%]" /><div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#101426] to-transparent px-5 pb-5 pt-16"><p className="text-xs font-semibold text-white">{t.portraitLabel}</p><p className="mt-1 text-[10px] text-white/60">{t.portraitNote}</p></div></div><div><p className="accent text-[10px] font-bold uppercase tracking-[.2em]">{t.storyKicker}</p><h2 className="mt-4 max-w-3xl text-3xl font-bold leading-[1.08] tracking-[-.055em] sm:text-5xl">{t.storyTitle} <span className="gradient-text">{t.storyHighlight}</span></h2><p className="muted mt-6 max-w-2xl text-base leading-7">{t.storyText}</p><div className="mt-7 flex flex-wrap gap-2">{t.aboutTags.map((tag) => <span key={tag} className="tech-pill rounded-full px-3 py-1.5 text-[11px]">{tag}</span>)}</div></div></div></div></Reveal></section>;
@@ -1006,26 +1318,575 @@ function PhotoLightbox({ index, language, close }: { index: number | null; langu
   return <AnimatePresence>{index !== null && <motion.div role="dialog" aria-modal="true" aria-label={t.awards[index][0]} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[70] grid place-items-center bg-[#05060d]/85 p-4 backdrop-blur-sm" onClick={close}><motion.div initial={{ opacity: 0, scale: .96, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: .96, y: 12 }} transition={{ duration: .25 }} className="relative h-[min(82vh,760px)] w-[min(92vw,1100px)] overflow-hidden rounded-2xl border border-white/15 bg-[#111426] shadow-2xl" onClick={(event) => event.stopPropagation()}><Image src={competitionMedia[index]} alt={t.awards[index][0]} fill sizes="1100px" className="object-contain" /><button type="button" aria-label={t.close} onClick={close} className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full border border-white/15 bg-black/40 text-white backdrop-blur transition hover:bg-black/65"><X size={18} /></button><div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-5 pb-5 pt-16"><p className="text-lg font-semibold text-white">{t.awards[index][0]}</p><p className="mt-1 text-sm text-white/65">{t.awards[index][1]}</p></div></motion.div></motion.div>}</AnimatePresence>;
 }
 
-function Footer({ language }: { language: Language }) {
+function Footer({ language, onCopyEmail }: { language: Language; onCopyEmail: () => void }) {
   const t = copy[language];
-  return <footer id="contact" className="relative mt-20 overflow-hidden border-t border-[var(--border)] px-5 pb-8 pt-20 sm:px-7 lg:px-10">
-    <div className="footer-glow absolute inset-0" />
-    <div className="relative mx-auto max-w-7xl">
-      <Reveal>
-        <div className="flex flex-col items-start justify-between gap-10 md:flex-row md:items-end">
-          <div><div className="accent flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.2em]"><span className="pulse-dot h-2 w-2 rounded-full bg-emerald-400" />{t.footerStatus}</div><h2 className="mt-5 max-w-3xl text-[clamp(2.75rem,6.8vw,6.2rem)] font-extrabold leading-[1.06] tracking-[-0.03em]">{t.footerTitle} <span className="gradient-text">{t.footerHighlight}</span> {t.footerEnd}</h2></div>
-          <div className="flex flex-wrap gap-3"><a href="mailto:chientranminh355@gmail.com" className="surface group inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition hover:-translate-y-0.5 hover:border-[var(--border-strong)] hover:bg-white/5">{t.start}<ArrowUpRight size={18} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" /></a><a href="/Tran-Minh-Chien-CV.pdf" download className="primary-link inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition hover:-translate-y-0.5"><FileDown size={17} />{t.downloadCV}</a></div>
+  return (
+    <footer id="contact" className="relative mt-20 overflow-hidden border-t border-[var(--border)] px-5 pb-8 pt-20 sm:px-7 lg:px-10">
+      <div className="footer-glow absolute inset-0" />
+      <div className="relative mx-auto max-w-7xl">
+        <Reveal>
+          <div className="flex flex-col items-start justify-between gap-10 md:flex-row md:items-end">
+            <div>
+              <div className="accent flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.2em]">
+                <span className="pulse-dot h-2 w-2 rounded-full bg-emerald-400" />
+                {t.footerStatus}
+              </div>
+              <h2 className="mt-5 max-w-3xl text-[clamp(2.75rem,6.8vw,6.2rem)] font-extrabold leading-[1.06] tracking-[-0.03em]">
+                {t.footerTitle} <span className="gradient-text">{t.footerHighlight}</span> {t.footerEnd}
+              </h2>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={onCopyEmail}
+                className="surface group inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition hover:-translate-y-0.5 hover:border-[var(--border-strong)] hover:bg-white/5"
+              >
+                <Copy size={16} className="text-emerald-400 transition-transform group-hover:scale-110" />
+                <span>chientranminh355@gmail.com</span>
+              </button>
+              <a
+                href="/Tran-Minh-Chien-CV.pdf"
+                download
+                className="primary-link inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
+              >
+                <FileDown size={17} />
+                {t.downloadCV}
+              </a>
+            </div>
+          </div>
+        </Reveal>
+        <div className="muted mt-20 flex flex-col gap-5 border-t border-[var(--border)] pt-6 text-xs sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} TRAN MINH CHIEN</p>
+          <div className="flex flex-wrap items-center gap-5">
+            <a
+              href="https://github.com/m-chien"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 transition hover:text-[var(--text)]"
+            >
+              <Github size={14} />
+              m-chien
+            </a>
+            <button
+              type="button"
+              onClick={onCopyEmail}
+              className="flex items-center gap-1.5 transition hover:text-[var(--text)]"
+              title="Click to copy email"
+            >
+              <Mail size={14} className="text-emerald-400" />
+              chientranminh355@gmail.com
+            </button>
+            <a
+              href="/Tran-Minh-Chien-CV.pdf"
+              download
+              className="flex items-center gap-1.5 transition hover:text-[var(--text)]"
+            >
+              <FileDown size={14} />
+              CV
+            </a>
+            <span className="flex items-center gap-1.5">
+              <Globe2 size={14} />
+              {t.built}
+            </span>
+          </div>
         </div>
-      </Reveal>
-      <div className="muted mt-20 flex flex-col gap-5 border-t border-[var(--border)] pt-6 text-xs sm:flex-row sm:items-center sm:justify-between"><p>© {new Date().getFullYear()} TRAN MINH CHIEN</p><div className="flex flex-wrap items-center gap-5"><a href="https://github.com/m-chien" target="_blank" rel="noreferrer" className="flex items-center gap-1.5 transition hover:text-[var(--text)]"><Github size={14} />m-chien</a><a href="mailto:chientranminh355@gmail.com" className="flex items-center gap-1.5 transition hover:text-[var(--text)]"><Mail size={14} />chientranminh355@gmail.com</a><a href="/Tran-Minh-Chien-CV.pdf" download className="flex items-center gap-1.5 transition hover:text-[var(--text)]"><FileDown size={14} />CV</a><span className="flex items-center gap-1.5"><Globe2 size={14} />{t.built}</span></div></div>
-    </div>
-  </footer>;
+      </div>
+    </footer>
+  );
+}
+
+interface CommandItem {
+  id: string;
+  category: "navigation" | "projects" | "actions";
+  title: string;
+  subtitle?: string;
+  icon: ReactNode;
+  badge?: string;
+  action: () => void;
+}
+
+function CommandPalette({
+  open,
+  onClose,
+  language,
+  setLanguage,
+  theme,
+  setTheme,
+  onCopyEmail,
+}: {
+  open: boolean;
+  onClose: () => void;
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+  onCopyEmail: () => void;
+}) {
+  const [query, setQuery] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const isVi = language === "vi";
+
+  useEffect(() => {
+    if (open) {
+      setQuery("");
+      setSelectedIndex(0);
+      setTimeout(() => inputRef.current?.focus(), 60);
+    }
+  }, [open]);
+
+  const navigateTo = (hash: string) => {
+    onClose();
+    const el = document.querySelector(hash);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    } else {
+      window.location.hash = hash;
+    }
+  };
+
+  const items: CommandItem[] = [
+    // Navigation
+    {
+      id: "nav-projects",
+      category: "navigation",
+      title: isVi ? "Dự án tiêu biểu" : "Featured Projects",
+      subtitle: isVi ? "Khám phá 6 sản phẩm & hệ thống bento" : "Explore 6 flagship systems & bento",
+      icon: <Code2 size={16} className="text-emerald-400" />,
+      action: () => navigateTo("#projects"),
+    },
+    {
+      id: "nav-journey",
+      category: "navigation",
+      title: isVi ? "Lộ trình học tập & Dấu mốc" : "Career & Academic Roadmap",
+      subtitle: isVi ? "Dấu ấn từ UTE, SURF 2026 đến thực tập" : "Milestones from UTE, SURF 2026 to internship",
+      icon: <GraduationCap size={16} className="text-sky-400" />,
+      action: () => navigateTo("#journey"),
+    },
+    {
+      id: "nav-about",
+      category: "navigation",
+      title: isVi ? "Câu chuyện & Định hướng" : "Story & Philosophy",
+      subtitle: isVi ? "Hồ sơ cá nhân và tư duy kỹ thuật" : "Profile, background and engineering mindset",
+      icon: <Terminal size={16} className="text-purple-400" />,
+      action: () => navigateTo("#about"),
+    },
+    {
+      id: "nav-awards",
+      category: "navigation",
+      title: isVi ? "Dấu ấn & Giải thưởng" : "Awards & Competitions",
+      subtitle: isVi ? "SURF Quán quân, Top 8 SV Thế hệ mới VTV3, Hackathon" : "SURF Champion, VTV3 Top 8, Global Hackathons",
+      icon: <Trophy size={16} className="text-amber-400" />,
+      action: () => navigateTo("#awards"),
+    },
+    {
+      id: "nav-contact",
+      category: "navigation",
+      title: isVi ? "Thông tin liên hệ" : "Contact & Socials",
+      subtitle: isVi ? "Kết nối email, LinkedIn, GitHub" : "Reach out via email, GitHub and networks",
+      icon: <Mail size={16} className="text-emerald-400" />,
+      action: () => navigateTo("#contact"),
+    },
+
+    // Projects Direct Jump
+    {
+      id: "proj-signsound",
+      category: "projects",
+      title: "SignSound",
+      subtitle: isVi ? "Giải Nhất SURF 2026 · Hệ sinh thái Kính AR & AI Video" : "SURF 2026 Champion · AR Glasses & Assistive AI",
+      badge: "Flagship",
+      icon: <Sparkles size={16} className="text-emerald-400" />,
+      action: () => navigateTo("#projects"),
+    },
+    {
+      id: "proj-cinema",
+      category: "projects",
+      title: "ChienCINEMA",
+      subtitle: isVi ? "Hệ thống đặt vé xem phim hoàn chỉnh (Cinema OS)" : "Full cinema reservation & ticketing OS",
+      icon: <ExternalLink size={16} className="text-sky-400" />,
+      action: () => navigateTo("#projects"),
+    },
+    {
+      id: "proj-plants",
+      category: "projects",
+      title: "TreeAffiliate Website",
+      subtitle: isVi ? "Nền tảng thương mại Full-stack (Next.js + Java Spring)" : "Full-stack affiliate platform (Next.js + Java)",
+      icon: <ExternalLink size={16} className="text-emerald-400" />,
+      action: () => navigateTo("#projects"),
+    },
+    {
+      id: "proj-analyst",
+      category: "projects",
+      title: "AI Requirements Analyst",
+      subtitle: isVi ? "Workspace AI phân tích yêu cầu phần mềm · Live Demo" : "AI requirements engineering workspace · Live Demo",
+      badge: "Live Demo",
+      icon: <Sparkles size={16} className="text-purple-400" />,
+      action: () => {
+        window.open("https://ai-requirements-analyst-sqyt.vercel.app/", "_blank");
+        onClose();
+      },
+    },
+
+    // Quick Actions
+    {
+      id: "act-copy-email",
+      category: "actions",
+      title: isVi ? "Sao chép Email" : "Copy Email",
+      subtitle: "chientranminh355@gmail.com",
+      badge: "Quick",
+      icon: <Copy size={16} className="text-emerald-400" />,
+      action: () => {
+        onCopyEmail();
+        onClose();
+      },
+    },
+    {
+      id: "act-download-cv",
+      category: "actions",
+      title: isVi ? "Tải xuống CV (PDF)" : "Download Resume (PDF)",
+      subtitle: "Tran-Minh-Chien-CV.pdf",
+      icon: <FileDown size={16} className="text-sky-400" />,
+      action: () => {
+        const link = document.createElement("a");
+        link.href = "/Tran-Minh-Chien-CV.pdf";
+        link.download = "Tran-Minh-Chien-CV.pdf";
+        link.click();
+        onClose();
+      },
+    },
+    {
+      id: "act-toggle-theme",
+      category: "actions",
+      title: isVi
+        ? `Đổi sang giao diện ${theme === "dark" ? "Sáng" : "Tối"}`
+        : `Switch to ${theme === "dark" ? "Light" : "Dark"} Mode`,
+      icon: theme === "dark" ? <Sun size={16} className="text-amber-400" /> : <Moon size={16} className="text-sky-400" />,
+      action: () => {
+        setTheme(theme === "dark" ? "light" : "dark");
+        onClose();
+      },
+    },
+    {
+      id: "act-toggle-lang",
+      category: "actions",
+      title: isVi ? "Switch to English" : "Chuyển sang Tiếng Việt",
+      icon: <Languages size={16} className="text-emerald-400" />,
+      action: () => {
+        setLanguage(language === "vi" ? "en" : "vi");
+        onClose();
+      },
+    },
+    {
+      id: "act-github",
+      category: "actions",
+      title: "GitHub Profile",
+      subtitle: "github.com/m-chien",
+      icon: <Github size={16} className="text-white" />,
+      action: () => {
+        window.open("https://github.com/m-chien", "_blank");
+        onClose();
+      },
+    },
+  ];
+
+  const filtered = items.filter((item) => {
+    const q = query.toLowerCase().trim();
+    if (!q) return true;
+    return (
+      item.title.toLowerCase().includes(q) ||
+      (item.subtitle && item.subtitle.toLowerCase().includes(q)) ||
+      (item.badge && item.badge.toLowerCase().includes(q))
+    );
+  });
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev + 1) % (filtered.length || 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev - 1 + (filtered.length || 1)) % (filtered.length || 1));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (filtered[selectedIndex]) {
+        filtered[selectedIndex].action();
+      }
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      onClose();
+    }
+  };
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          role="dialog"
+          aria-modal="true"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.18 }}
+          onClick={onClose}
+          className="fixed inset-0 z-[120] grid place-items-start sm:place-items-center bg-[#040609]/80 p-4 sm:p-6 backdrop-blur-md overflow-y-auto"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96, y: -16 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: -16 }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={handleKeyDown}
+            className="w-full max-w-2xl overflow-hidden rounded-2xl border border-emerald-500/30 bg-[var(--page)] shadow-[0_24px_80px_rgba(0,0,0,0.6),0_0_40px_rgba(52,211,153,0.15)] mt-12 sm:mt-0"
+          >
+            {/* Search Input Bar */}
+            <div className="flex items-center gap-3 border-b border-[var(--border)] px-4 py-3.5">
+              <Search size={18} className="text-emerald-400 shrink-0" />
+              <input
+                ref={inputRef}
+                value={query}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setSelectedIndex(0);
+                }}
+                placeholder={
+                  isVi
+                    ? "Tìm nhanh dự án, lộ trình, sao chép email, phím tắt... (gõ để lọc)"
+                    : "Search projects, roadmap, copy email, shortcuts..."
+                }
+                className="w-full bg-transparent text-sm text-[var(--text)] placeholder-[var(--muted)] outline-none"
+              />
+              <span className="hidden sm:inline-block rounded border border-[var(--border)] px-2 py-0.5 font-mono text-[10px] text-[var(--muted)]">
+                ESC
+              </span>
+            </div>
+
+            {/* Filtered list items */}
+            <div className="max-h-[380px] overflow-y-auto p-2 scrollbar-thin">
+              {filtered.length === 0 ? (
+                <div className="py-12 text-center text-sm text-[var(--muted)]">
+                  {isVi ? "Không tìm thấy kết quả phù hợp" : "No results found"}
+                </div>
+              ) : (
+                filtered.map((item, index) => {
+                  const isSelected = index === selectedIndex;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={item.action}
+                      onMouseEnter={() => setSelectedIndex(index)}
+                      className={`flex w-full items-center justify-between gap-3 rounded-xl px-3.5 py-2.5 text-left transition-colors duration-150 ${
+                        isSelected
+                          ? "bg-emerald-500/15 text-[var(--text)] border border-emerald-500/30 shadow-sm"
+                          : "text-[var(--text)] hover:bg-white/[0.04]"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-[var(--border)] bg-[var(--soft)]">
+                          {item.icon}
+                        </span>
+                        <div className="min-w-0">
+                          <p className="text-xs font-semibold truncate flex items-center gap-2">
+                            <span>{item.title}</span>
+                            {item.badge && (
+                              <span className="rounded bg-emerald-400/10 px-1.5 py-0.5 font-mono text-[9px] font-bold text-emerald-400 border border-emerald-400/20">
+                                {item.badge}
+                              </span>
+                            )}
+                          </p>
+                          {item.subtitle && (
+                            <p className="text-[11px] text-[var(--muted)] truncate mt-0.5">
+                              {item.subtitle}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <ArrowUpRight
+                        size={14}
+                        className={`shrink-0 text-[var(--muted)] transition-transform ${
+                          isSelected ? "translate-x-0.5 -translate-y-0.5 text-emerald-400" : ""
+                        }`}
+                      />
+                    </button>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Footer guide bar */}
+            <div className="flex items-center justify-between border-t border-[var(--border)] bg-[var(--soft)] px-4 py-2 text-[10px] text-[var(--muted)]">
+              <div className="flex items-center gap-3">
+                <span>↑↓ {isVi ? "để chọn" : "to navigate"}</span>
+                <span>↵ {isVi ? "thực thi" : "to select"}</span>
+              </div>
+              <span className="font-mono text-emerald-400">Tran Minh Chien Portfolio</span>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+function CustomCursor() {
+  const [mounted, setMounted] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [cursorText, setCursorText] = useState("");
+  const [isHovered, setIsHovered] = useState(false);
+
+  const mouseX = useMotionValue(-100);
+  const mouseY = useMotionValue(-100);
+
+  const springConfig = { damping: 28, stiffness: 420 };
+  const cursorX = useSpring(mouseX, springConfig);
+  const cursorY = useSpring(mouseY, springConfig);
+
+  useEffect(() => {
+    if (!window.matchMedia("(pointer: fine)").matches) return;
+    setMounted(true);
+
+    const handleMouseMove = (e: globalThis.MouseEvent) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+      if (!visible) setVisible(true);
+
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+
+      const isCanvas = !!target.closest("canvas");
+      const isAwards = !!target.closest(".gallery-card");
+      const isInteractive = !!target.closest("a, button, input, textarea, [role='button']");
+
+      if (isCanvas) {
+        setCursorText("DRAG 360°");
+        setIsHovered(true);
+      } else if (isAwards) {
+        setCursorText("VIEW");
+        setIsHovered(true);
+      } else if (isInteractive) {
+        setCursorText("");
+        setIsHovered(true);
+      } else {
+        setCursorText("");
+        setIsHovered(false);
+      }
+    };
+
+    const handleMouseLeave = () => setVisible(false);
+    const handleMouseEnter = () => setVisible(true);
+
+    window.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseleave", handleMouseLeave);
+    document.addEventListener("mouseenter", handleMouseEnter);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseleave", handleMouseLeave);
+      document.removeEventListener("mouseenter", handleMouseEnter);
+    };
+  }, [mouseX, mouseY, visible]);
+
+  if (!mounted || !visible) return null;
+
+  return (
+    <motion.div
+      className="pointer-events-none fixed left-0 top-0 z-[9999] select-none"
+      style={{
+        x: cursorX,
+        y: cursorY,
+      }}
+    >
+      <div
+        style={{ transform: "translate(-50%, -50%)" }}
+        className={`flex items-center justify-center rounded-full transition-all duration-200 ease-out ${
+          cursorText
+            ? "h-16 w-16 bg-emerald-500/90 text-black shadow-[0_0_24px_rgba(52,211,153,0.5)] backdrop-blur-md"
+            : isHovered
+            ? "h-9 w-9 border border-emerald-400 bg-emerald-400/15 shadow-[0_0_16px_rgba(52,211,153,0.35)]"
+            : "h-3.5 w-3.5 bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.85)]"
+        }`}
+      >
+        {cursorText ? (
+          <span className="font-mono text-[9px] font-black tracking-wider text-[#022013]">
+            {cursorText}
+          </span>
+        ) : isHovered ? (
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+        ) : null}
+      </div>
+    </motion.div>
+  );
+}
+
+function ToastNotification({
+  message,
+  visible,
+  onClose,
+}: {
+  message: string;
+  visible: boolean;
+  onClose: () => void;
+}) {
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          initial={{ opacity: 0, y: 30, scale: 0.92 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 20, scale: 0.95 }}
+          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+          className="fixed bottom-6 left-1/2 z-[130] -translate-x-1/2 sm:left-auto sm:right-8 sm:translate-x-0"
+        >
+          <div className="flex items-center gap-3 rounded-2xl border border-emerald-400/40 bg-[#091510]/95 px-5 py-3.5 text-sm font-medium text-white shadow-[0_16px_48px_rgba(0,0,0,0.5),0_0_24px_rgba(52,211,153,0.25)] backdrop-blur-xl">
+            <span className="grid h-6 w-6 place-items-center rounded-full bg-emerald-400 text-[#022013]">
+              <Check size={14} strokeWidth={3} />
+            </span>
+            <span>{message}</span>
+            <button
+              type="button"
+              onClick={onClose}
+              className="ml-2 rounded-full p-1 text-white/50 hover:bg-white/10 hover:text-white transition"
+              aria-label="Close notification"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 }
 
 export default function Home() {
   const [language, setLanguage] = useState<Language>("vi");
   const [theme, setTheme] = useState<Theme>("dark");
   const [selectedCompetition, setSelectedCompetition] = useState<number | null>(null);
+  const [cmdOpen, setCmdOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText("chientranminh355@gmail.com");
+    setToastMessage(
+      language === "vi"
+        ? "Đã sao chép Email: chientranminh355@gmail.com"
+        : "Copied Email: chientranminh355@gmail.com"
+    );
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3200);
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setCmdOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   useEffect(() => {
     const storedLanguage = window.localStorage.getItem("portfolio-language");
@@ -1051,17 +1912,40 @@ export default function Home() {
 
   return (
     <main className={`theme-root theme-${theme} relative isolate min-h-screen overflow-hidden`}>
+      <CustomCursor />
       <div className="background-orbs pointer-events-none absolute inset-0 -z-10" />
       <div className="noise pointer-events-none absolute inset-0 -z-10 opacity-[.035]" />
       <div className="grid-lines pointer-events-none absolute inset-x-0 top-0 -z-10 h-[760px] opacity-[.15] [mask-image:linear-gradient(to_bottom,black,transparent)]" />
-      <Nav language={language} setLanguage={setLanguage} theme={theme} setTheme={setTheme} />
-      <Hero language={language} theme={theme} />
+      <Nav
+        language={language}
+        setLanguage={setLanguage}
+        theme={theme}
+        setTheme={setTheme}
+        onOpenCmd={() => setCmdOpen(true)}
+      />
+      <Hero language={language} theme={theme} onCopyEmail={handleCopyEmail} />
       <TechMarquee />
       <Projects language={language} />
+      <Journey language={language} />
       <About language={language} />
       <CompetitionGallery language={language} onSelect={setSelectedCompetition} />
-      <Footer language={language} />
+      <Footer language={language} onCopyEmail={handleCopyEmail} />
       <PhotoLightbox index={selectedCompetition} language={language} close={() => setSelectedCompetition(null)} />
+      <CommandPalette
+        open={cmdOpen}
+        onClose={() => setCmdOpen(false)}
+        language={language}
+        setLanguage={setLanguage}
+        theme={theme}
+        setTheme={setTheme}
+        onCopyEmail={handleCopyEmail}
+      />
+      <ToastNotification
+        visible={!!toastMessage}
+        message={toastMessage || ""}
+        onClose={() => setToastMessage(null)}
+      />
     </main>
   );
 }
+
