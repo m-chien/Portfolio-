@@ -19,11 +19,11 @@ body {
   overflow-x: hidden;
   background: #0a0a16;
   color: #f5f6ff;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), "Be Vietnam Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 ::selection {
-  background: rgba(102, 255, 218, 0.25);
+  background: rgba(16, 185, 129, 0.35);
   color: white;
 }
 
@@ -33,7 +33,7 @@ body {
 
 .grid-lines {
   background-image: linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-  background-size: 52px 52px;
+  background-size: 56px 56px;
 }
 
 .theme-root {
@@ -43,51 +43,47 @@ body {
 }
 
 .theme-dark {
-  --page: #0a0a16;
-  --text: #f5f6ff;
-  --muted: rgba(237, 239, 255, .62);
-  --surface: rgba(19, 20, 38, .68);
-  --soft: rgba(255, 255, 255, .04);
-  --nav: rgba(16, 16, 32, .72);
-  --border: rgba(255, 255, 255, .11);
-  --border-strong: rgba(255, 255, 255, .24);
-  --progress-track: rgba(255, 255, 255, .1);
-  --chart: #0d0e1d;
-  --grid-color: rgba(255, 255, 255, .05);
-  --accent-text: #96f7e2;
-  --orb-one: rgba(47, 212, 192, .16);
-  --orb-two: rgba(153, 92, 255, .16);
-  --orb-three: rgba(44, 106, 214, .1);
-  --footer-orb: rgba(87, 236, 205, .16);
+  --page: #08090b;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --surface: rgba(15, 17, 21, 0.78);
+  --soft: rgba(255, 255, 255, 0.035);
+  --nav: rgba(10, 12, 16, 0.82);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(52, 211, 153, 0.35);
+  --progress-track: rgba(255, 255, 255, 0.08);
+  --chart: #0d0f14;
+  --grid-color: rgba(255, 255, 255, 0.03);
+  --accent-text: #34d399;
+  --footer-orb: rgba(16, 185, 129, 0.08);
 }
 
 .theme-light {
-  --page: #f2f7f6;
-  --text: #152237;
-  --muted: #667085;
-  --surface: rgba(255, 255, 255, .74);
-  --soft: rgba(25, 54, 71, .045);
-  --nav: rgba(255, 255, 255, .8);
-  --border: rgba(32, 57, 76, .13);
-  --border-strong: rgba(32, 57, 76, .27);
-  --progress-track: rgba(28, 63, 80, .11);
-  --chart: #ecf5f4;
-  --grid-color: rgba(35, 71, 91, .07);
-  --accent-text: #0d7164;
-  --orb-one: rgba(71, 208, 187, .22);
-  --orb-two: rgba(172, 129, 255, .16);
-  --orb-three: rgba(94, 162, 255, .13);
-  --footer-orb: rgba(64, 193, 171, .18);
+  --page: #f8fafc;
+  --text: #0f172a;
+  --muted: #64748b;
+  --surface: rgba(255, 255, 255, 0.88);
+  --soft: rgba(15, 23, 42, 0.03);
+  --nav: rgba(255, 255, 255, 0.9);
+  --border: rgba(15, 23, 42, 0.08);
+  --border-strong: rgba(16, 185, 129, 0.4);
+  --progress-track: rgba(15, 23, 42, 0.06);
+  --chart: #f1f5f9;
+  --grid-color: rgba(15, 23, 42, 0.035);
+  --accent-text: #059669;
+  --footer-orb: rgba(16, 185, 129, 0.06);
 }
 
 .background-orbs {
-  background: radial-gradient(ellipse at 16% 12%, var(--orb-one), transparent 30%), radial-gradient(ellipse at 84% 18%, var(--orb-two), transparent 29%), radial-gradient(ellipse at 50% 78%, var(--orb-three), transparent 33%);
+  background: 
+    radial-gradient(ellipse 70% 45% at 50% -12%, rgba(16, 185, 129, 0.08), transparent 70%),
+    radial-gradient(ellipse 50% 30% at 50% 100%, rgba(16, 185, 129, 0.04), transparent 60%);
 }
 
 .surface {
   background: var(--surface);
   border: 1px solid var(--border);
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(24px);
 }
 
 .nav-glass { background: var(--nav); }
@@ -95,16 +91,29 @@ body {
 .accent { color: var(--accent-text); }
 
 .gradient-text {
-  background: linear-gradient(100deg, var(--text) 0%, #6de7cc 43%, #a58aff 100%);
+  background: linear-gradient(135deg, #ffffff 30%, #a7f3d0 75%, #34d399 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.theme-light .gradient-text {
+  background: linear-gradient(135deg, #0f172a 35%, #059669 80%, #10b981 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 .availability {
-  border: 1px solid var(--border);
-  background: var(--soft);
-  color: var(--muted);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  background: rgba(16, 185, 129, 0.06);
+  color: #a7f3d0;
+}
+
+.theme-light .availability {
+  border: 1px solid rgba(5, 150, 105, 0.3);
+  background: rgba(16, 185, 129, 0.1);
+  color: #065f46;
 }
 
 .control-button {
@@ -113,7 +122,54 @@ body {
   color: var(--text);
 }
 
-.primary-link { background: #c9fff0; color: #0b1720; }
+.primary-link {
+  background: #ffffff;
+  color: #08090b;
+  font-weight: 600;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+}
+
+.primary-link:hover {
+  background: #f1f5f9;
+  transform: translateY(-2px);
+}
+
+.theme-light .primary-link {
+  background: #0f172a;
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.15);
+}
+
+.theme-light .primary-link:hover {
+  background: #1e293b;
+}
+
+.emerald-link {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  color: #34d399;
+  font-weight: 600;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+}
+
+.emerald-link:hover {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(52, 211, 153, 0.6);
+  box-shadow: 0 0 28px rgba(16, 185, 129, 0.3);
+}
+
+.theme-light .emerald-link {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(5, 150, 105, 0.35);
+  color: #047857;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.12);
+}
+
+.theme-light .emerald-link:hover {
+  background: rgba(16, 185, 129, 0.18);
+  border-color: rgba(5, 150, 105, 0.6);
+  color: #064e3b;
+}
 
 .marquee-section {
   border-top: 1px solid var(--border);
@@ -127,12 +183,29 @@ body {
   border: 1px solid var(--border);
   background: var(--soft);
   color: var(--text);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04);
 }
 
-.project-badge { background: linear-gradient(90deg, #82f2d9, #a692ff); color: #101426; }
-.photo-overlay { background: linear-gradient(to top, rgba(10, 12, 25, .55), transparent 55%); }
-.gallery-shade { background: linear-gradient(to top, rgba(5, 7, 16, .82), transparent 62%); }
+.theme-light .tech-pill {
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: rgba(15, 23, 42, 0.035);
+  color: #1e293b;
+}
+
+.project-badge {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  color: #6ee7b7;
+}
+
+.theme-light .project-badge {
+  background: rgba(5, 150, 105, 0.08);
+  border: 1px solid rgba(5, 150, 105, 0.2);
+  color: #059669;
+}
+
+.photo-overlay { background: linear-gradient(to top, rgba(8, 9, 11, .85), transparent 55%); }
+.gallery-shade { background: linear-gradient(to top, rgba(8, 9, 11, .95), transparent 62%); }
 .footer-glow { background: radial-gradient(ellipse at 50% 100%, var(--footer-orb), transparent 45%); }
 
 .marquee-track {
