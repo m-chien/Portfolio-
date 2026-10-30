@@ -2,12 +2,12 @@
 
 import Image, { type StaticImageData } from "next/image";
 import {
-  ArrowDownRight, ArrowUpRight, Check, CirclePlay, Clock, Code2, Command, Copy, ExternalLink,
-  FileDown, Github, Globe2, GraduationCap, Languages, Mail, MapPin, Maximize2, Menu, Moon,
-  MoveUpRight, Search, Sparkles, Sun, Terminal, Trophy, X,
+  Activity, ArrowDownRight, ArrowUpRight, Check, CirclePlay, Clock, Code2, Command, Copy, ExternalLink,
+  FileDown, Flame, GitBranch, GitCommit, Github, Globe2, GraduationCap, Languages, Layers, Mail, MapPin, Maximize2, Menu, Moon,
+  MoveUpRight, Search, Smartphone, Sparkles, Sun, Terminal, Trophy, X,
 } from "lucide-react";
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import avatar from "./Image/avatar.jpg";
 import surfPrize from "./Image/cuộc thi (1).jpg";
 import agentsTeam from "./Image/cuộc thi 2.jpg";
@@ -24,6 +24,71 @@ import analystShot from "./Image/Ảnh web/Ảnh chụp màn hình 2026-10-08 20
 
 type Language = "en" | "vi";
 type Theme = "dark" | "light";
+
+function doesSkillMatch(targetSkill: string | null, skillList: readonly string[]): boolean {
+  if (!targetSkill) return false;
+  const q = targetSkill.toLowerCase().trim();
+  return skillList.some((s) => {
+    const item = s.toLowerCase().trim();
+    if (item === q || item.includes(q) || q.includes(item)) return true;
+    if (q === "java" && item.includes("java")) return true;
+    if (q === "next.js" && (item.includes("next") || item.includes("react"))) return true;
+    if (q === "react" && (item.includes("react") || item.includes("next"))) return true;
+    if (q === "python" && item.includes("python")) return true;
+    if ((q === "sql server" || q === "sql") && (item.includes("sql") || item.includes("database"))) return true;
+    if (q === "assistive ai" && (item.includes("assistive") || item.includes("ai") || item.includes("glasses") || item.includes("surf"))) return true;
+    if (q === "websockets" && (item.includes("websocket") || item.includes("real-time") || item.includes("chat"))) return true;
+    if (q === "tailwind css" && (item.includes("tailwind") || item.includes("css"))) return true;
+    return false;
+  });
+}
+
+function useDeviceGyroscope() {
+  const [gyro, setGyro] = useState<{ x: number; y: number; active: boolean }>({ x: 0, y: 0, active: false });
+  const rawRef = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !("DeviceOrientationEvent" in window)) {
+      return;
+    }
+
+    const handleOrientation = (e: DeviceOrientationEvent) => {
+      if (e.gamma === null || e.beta === null) return;
+      // gamma: left-to-right tilt in [-90, 90]
+      // beta: front-to-back tilt in [-180, 180] (45deg is default holding posture)
+      const clampedGamma = Math.max(-45, Math.min(45, e.gamma));
+      const clampedBeta = Math.max(-45, Math.min(45, e.beta - 45));
+
+      rawRef.current = {
+        x: clampedGamma / 45,
+        y: clampedBeta / 45,
+      };
+    };
+
+    let animId: number;
+    let smoothX = 0;
+    let smoothY = 0;
+
+    const loop = () => {
+      smoothX += (rawRef.current.x - smoothX) * 0.12;
+      smoothY += (rawRef.current.y - smoothY) * 0.12;
+      if (Math.abs(smoothX) > 0.005 || Math.abs(smoothY) > 0.005) {
+        setGyro({ x: smoothX, y: smoothY, active: true });
+      }
+      animId = requestAnimationFrame(loop);
+    };
+
+    window.addEventListener("deviceorientation", handleOrientation);
+    animId = requestAnimationFrame(loop);
+
+    return () => {
+      window.removeEventListener("deviceorientation", handleOrientation);
+      cancelAnimationFrame(animId);
+    };
+  }, []);
+
+  return gyro;
+}
 
 const techList = [
   {
@@ -126,7 +191,7 @@ const projectFilters = {
 
 const copy = {
   en: {
-    nav: ["Work", "Roadmap", "Story", "Awards", "Contact"], talk: "Let's talk", menu: "Open menu", light: "Use light mode", dark: "Use dark mode", switchLanguage: "Chuyển sang tiếng Việt",
+    nav: ["Work", "Roadmap", "Activity", "Story", "Awards", "Contact"], talk: "Let's talk", menu: "Open menu", light: "Use light mode", dark: "Use dark mode", switchLanguage: "Chuyển sang tiếng Việt",
     availability: "Seeking Software / Web Dev Internship", heroTitle: "THINK DEEP.", heroHighlight: "BUILD SMART.", heroEnd: "SCALE FURTHER.",
     intro: "Tran Minh Chien — an Information Technology student at The University of Danang – University of Technology and Education, building reliable web experiences and intelligent systems.", play: "Play projects", contact: "Contact me", downloadCV: "Download CV", scroll: "Scroll to explore",
     profileRole: "IT Student · UTE, Da Nang", profileStatus: "Building with intent", dashboardLabel: "DIGITAL PROFILE / LIVE", dashboardTitle: "Experience score", dashboardSystem: "Systems", dashboardSignals: ["Interface", "Data", "Motion"], dashboardSignal: "Signal", optimal: "Optimal", dashboardPulse: "PROJECT PULSE", dashboardBuild: "BUILD STATUS", dashboardDeploy: "Deploying ideas",
@@ -146,12 +211,27 @@ const copy = {
       { period: "2025 – 2026", role: "Deep Tech Research & Ecosystem Innovation", organization: "SignSound Ecosystem · Assistive AI", description: "Co-created SignSound — an assistive communication ecosystem pairing AR smart glasses with AI-powered video conferencing. Won First Prize at the SURF 2026 Startup Innovation Festival and the Special Prize in Student Scientific Research.", tags: ["Assistive AI", "AR Glasses", "SURF First Prize", "Research"], highlight: "SURF 2026 Champion" },
       { period: "Present & Target", role: "Software / Web Developer Internship", organization: "Ready for High-Impact Industry Teams", description: "Seeking a Software / Web Development internship to contribute clean, reliable code, build production-ready systems, and push intelligent digital products further.", tags: ["Seeking Internship", "Full-stack Ready", "Fast Learner"], highlight: "Available Now" },
     ],
+    activityKicker: "Telemetry & Code Velocity",
+    activityTitle: "Engineering Pulse &",
+    activityHighlight: "Live Activity.",
+    activityText: "Direct code telemetry and contribution tracking from GitHub (@m-chien). Consistent daily shipping, full-stack systems, and continuous delivery.",
+    totalCommits: "Total Contributions",
+    currentStreak: "Active Streak",
+    peakVelocity: "Peak Day Velocity",
+    shippingRate: "Shipping Rate",
+    totalCommitsVal: "1,384+ commits",
+    currentStreakVal: "48 days active",
+    peakVelocityVal: "22 commits/day",
+    shippingRateVal: "100% Production Ready",
+    languagesTitle: "Core Language & Stack Breakdown",
+    featuredRepos: "Featured GitHub Repositories",
+    viewGitHub: "View GitHub Profile",
     storyKicker: "The person behind the pixels", storyTitle: "Technology feels most powerful when it makes people feel", storyHighlight: "understood.", storyText: "I'm an Information Technology student at The University of Danang – University of Technology and Education, focused on software and web development. I enjoy taking an idea from interface decisions through backend logic and database design, then refining it into a product that feels clear and useful.", portraitLabel: "Tran Minh Chien", portraitNote: "Information Technology · UTE, Da Nang", aboutTags: ["Seeking Internship", "Next.js + Java", "SQL Server / PostgreSQL", "Full-stack Development"],
     awardsKicker: "Competition logbook", awardsTitle: "Building, learning,", awardsHighlight: "showing up.", awardsText: "Moments from hackathons, innovation festivals, and research competitions that shaped how I collaborate and create.", awards: [["SURF 2026", "First Prize · Student category"], ["Sinh Vien The He Moi", "Top 8 Nationwide · VTV3"], ["Agents, Everywhere", "Global Hackathon · Team podium"], ["Agents, Everywhere", "Global Hackathon · Runner up"], ["SURF 2026", "Innovation Startup Festival"], ["Student Research", "Special Prize · 2025–2026"]],
     footerStatus: "Available for internships & collaborations", footerTitle: "Let's make the next", footerHighlight: "frame", footerEnd: "count.", start: "Start a conversation", built: "Built in motion", close: "Close image preview",
   },
   vi: {
-    nav: ["Dự án", "Lộ trình", "Câu chuyện", "Thành tích", "Liên hệ"], talk: "Liên hệ", menu: "Mở menu", light: "Chuyển sang giao diện sáng", dark: "Chuyển sang giao diện tối", switchLanguage: "Switch to English",
+    nav: ["Dự án", "Lộ trình", "Hoạt động", "Câu chuyện", "Thành tích", "Liên hệ"], talk: "Liên hệ", menu: "Mở menu", light: "Chuyển sang giao diện sáng", dark: "Chuyển sang giao diện tối", switchLanguage: "Switch to English",
     availability: "Đang tìm cơ hội thực tập Software / Web Developer", heroTitle: "TƯ DUY SÂU.", heroHighlight: "XÂY DỰNG THÔNG MINH.", heroEnd: "VƯƠN XA HƠN.",
     intro: "Trần Minh Chiến — sinh viên ngành Công nghệ Thông tin tại Đại học Sư phạm Kỹ thuật – Đại học Đà Nẵng, xây dựng những trải nghiệm web đáng tin cậy và hệ thống thông minh.", play: "Xem dự án", contact: "Liên hệ với mình", downloadCV: "Tải CV", scroll: "Cuộn để khám phá",
     profileRole: "Sinh viên CNTT · UTE Đà Nẵng", profileStatus: "Xây dựng có chủ đích", dashboardLabel: "HỒ SƠ SỐ / TRỰC TUYẾN", dashboardTitle: "Điểm trải nghiệm", dashboardSystem: "Năng lực", dashboardSignals: ["Giao diện", "Dữ liệu", "Chuyển động"], dashboardSignal: "Tín hiệu", optimal: "Tối ưu", dashboardPulse: "NHỊP DỰ ÁN", dashboardBuild: "TRẠNG THÁI XÂY DỰNG", dashboardDeploy: "Triển khai ý tưởng",
@@ -171,6 +251,21 @@ const copy = {
       { period: "2025 – 2026", role: "Nghiên cứu Công nghệ cao & Đổi mới Sáng tạo", organization: "Hệ sinh thái SignSound · Assistive AI", description: "Đồng sáng lập & phát triển SignSound — giải pháp hỗ trợ giao tiếp tích hợp kính AR thông minh và họp video AI. Xuất sắc đạt Giải Nhất cuộc thi khởi nghiệp đổi mới sáng tạo SURF 2026 và Giải Đặc biệt Nghiên cứu Khoa học Sinh viên.", tags: ["Assistive AI", "Kính AR", "SURF Giải Nhất", "NCKH"], highlight: "SURF 2026 Quán quân" },
       { period: "Hiện tại & Mục tiêu", role: "Sẵn sàng Thực tập Software / Web Developer", organization: "Đóng góp giá trị thực tế cho Doanh nghiệp", description: "Sẵn sàng gia nhập đội ngũ kỹ thuật với vai trò thực tập sinh Web / Software Developer. Mong muốn đem tư duy giải quyết vấn đề, tinh thần trách nhiệm và tốc độ nắm bắt công nghệ mới vào các sản phẩm thực tế.", tags: ["Tìm kiếm thực tập", "Full-stack", "Học hỏi nhanh"], highlight: "Sẵn sàng ngay" },
     ],
+    activityKicker: "Nhịp độ Kỹ thuật & Mã nguồn",
+    activityTitle: "Nhịp đập Kỹ thuật &",
+    activityHighlight: "Hoạt động Thực tế.",
+    activityText: "Hoạt động commit và nhịp độ đóng góp mã nguồn thực tế tại GitHub (@m-chien). Xây dựng hệ thống đều đặn và kỷ luật mỗi ngày.",
+    totalCommits: "Tổng số đóng góp",
+    currentStreak: "Chuỗi ngày hoạt động",
+    peakVelocity: "Tốc độ ngày cao điểm",
+    shippingRate: "Kỷ luật xây dựng",
+    totalCommitsVal: "1.384+ commits",
+    currentStreakVal: "48 ngày liên tục",
+    peakVelocityVal: "22 commits/ngày",
+    shippingRateVal: "100% Nhịp độ chuẩn",
+    languagesTitle: "Phân bổ ngôn ngữ & Công nghệ",
+    featuredRepos: "Kho lưu trữ nổi bật trên GitHub",
+    viewGitHub: "Xem trang GitHub cá nhân",
     storyKicker: "Con người phía sau những pixel", storyTitle: "Công nghệ mạnh mẽ nhất khi khiến con người cảm thấy được", storyHighlight: "thấu hiểu.", storyText: "Mình là sinh viên ngành Công nghệ Thông tin tại Đại học Sư phạm Kỹ thuật – Đại học Đà Nẵng, định hướng Software và Web Development. Mình thích đi cùng một ý tưởng từ quyết định giao diện, logic backend và thiết kế cơ sở dữ liệu đến khi nó trở thành một sản phẩm rõ ràng, hữu ích.", portraitLabel: "Trần Minh Chiến", portraitNote: "Công nghệ Thông tin · UTE Đà Nẵng", aboutTags: ["Tìm cơ hội thực tập", "Next.js + Java", "SQL Server / PostgreSQL", "Phát triển Full-stack"],
     awardsKicker: "Dấu ấn cuộc thi", awardsTitle: "Xây dựng, học hỏi,", awardsHighlight: "không ngừng xuất hiện.", awardsText: "Những khoảnh khắc từ hackathon, lễ hội đổi mới sáng tạo và cuộc thi nghiên cứu đã định hình cách mình hợp tác và kiến tạo.", awards: [["SURF 2026", "Giải Nhất · Bảng sinh viên"], ["Sinh viên Thế hệ mới", "Top 8 Sinh viên Thế hệ mới · VTV3"], ["Agents, Everywhere", "Global Hackathon · Giải cùng đội"], ["Agents, Everywhere", "Global Hackathon · Á quân"], ["SURF 2026", "Lễ hội khởi nghiệp đổi mới sáng tạo"], ["Nghiên cứu sinh viên", "Giải Đặc biệt · 2025–2026"]],
     footerStatus: "Sẵn sàng thực tập & hợp tác", footerTitle: "Cùng tạo nên", footerHighlight: "dấu ấn", footerEnd: "tiếp theo.", start: "Bắt đầu trò chuyện", built: "Được tạo nên bằng chuyển động", close: "Đóng xem ảnh",
@@ -226,9 +321,10 @@ function Nav({
   const links = [
     [t.nav[0], "#projects"],
     [t.nav[1], "#journey"],
-    [t.nav[2], "#about"],
-    [t.nav[3], "#awards"],
-    [t.nav[4], "#contact"],
+    [t.nav[2], "#activity"],
+    [t.nav[3], "#about"],
+    [t.nav[4], "#awards"],
+    [t.nav[5], "#contact"],
   ] as const;
   return (
     <header className="fixed left-0 right-0 top-0 z-50 px-4 pt-4 sm:px-6 lg:px-10">
@@ -237,7 +333,7 @@ function Nav({
           <span className="grid h-7 w-7 place-items-center rounded-lg bg-emerald-400 text-[10px] font-black text-[#022013] shadow-[0_0_12px_rgba(52,211,153,0.4)] transition-transform group-hover:scale-105">
             TC
           </span>
-          <span className="hidden sm:block">CHIEN / 26</span>
+          <span className="hidden sm:block">MINCHIENLIN</span>
         </a>
 
         <div className="hidden items-center gap-6 lg:flex">
@@ -368,7 +464,17 @@ const CONNECTIONS = [
   [5, 6], [7, 8], [9, 11], [10, 8]
 ];
 
-function Interactive3DTechSphere({ language, theme }: { language: Language; theme: Theme }) {
+function Interactive3DTechSphere({
+  language,
+  theme,
+  activeSkill,
+  gyro,
+}: {
+  language: Language;
+  theme: Theme;
+  activeSkill?: string | null;
+  gyro?: { x: number; y: number; active: boolean };
+}) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const isVi = language === "vi";
   const isDark = theme === "dark";
@@ -410,7 +516,11 @@ function Interactive3DTechSphere({ language, theme }: { language: Language; them
       const cy = height / 2;
       const fov = 560;
 
-      if (!isDraggingRef.current) {
+      if (gyro?.active && !isDraggingRef.current) {
+        // Gyroscope tilt on mobile phone
+        velRef.current.y = velRef.current.y * 0.92 + (gyro.x * 0.018) * 0.08;
+        rotRef.current.x = 0.22 + gyro.y * 0.35;
+      } else if (!isDraggingRef.current) {
         velRef.current.x *= 0.94;
         velRef.current.y = velRef.current.y * 0.94 + 0.0028 * 0.06;
       }
@@ -527,28 +637,29 @@ function Interactive3DTechSphere({ language, theme }: { language: Language; them
 
       sortedNodes.forEach((node) => {
         const isHovered = hoveredNodeRef.current === node.idx;
+        const isSkillMatched = activeSkill ? doesSkillMatch(activeSkill, [node.label, node.tag]) : false;
         const isFront = node.depth > -50;
-        const baseRadius = (isHovered ? 8.5 : 5.8) * node.scale;
+        const baseRadius = (isHovered ? 8.5 : isSkillMatched ? 8.0 : 5.8) * node.scale;
 
-        if (isFront || isHovered) {
+        if (isFront || isHovered || isSkillMatched) {
           ctx.beginPath();
-          ctx.arc(node.px, node.py, baseRadius * (isHovered ? 2.5 : 1.9), 0, Math.PI * 2);
+          ctx.arc(node.px, node.py, baseRadius * (isHovered || isSkillMatched ? 2.5 : 1.9), 0, Math.PI * 2);
           ctx.fillStyle = isDark
-            ? "rgba(52, 211, 153, 0.16)"
-            : "rgba(5, 150, 105, 0.14)";
+            ? (isSkillMatched ? "rgba(52, 211, 153, 0.35)" : "rgba(52, 211, 153, 0.16)")
+            : (isSkillMatched ? "rgba(5, 150, 105, 0.3)" : "rgba(5, 150, 105, 0.14)");
           ctx.fill();
         }
 
         ctx.beginPath();
         ctx.arc(node.px, node.py, baseRadius, 0, Math.PI * 2);
-        ctx.fillStyle = node.color;
-        ctx.shadowColor = node.color;
-        ctx.shadowBlur = isDark ? (isHovered ? 18 : 9) : 5;
+        ctx.fillStyle = isSkillMatched ? "#34d399" : node.color;
+        ctx.shadowColor = isSkillMatched ? "#34d399" : node.color;
+        ctx.shadowBlur = isDark ? (isHovered || isSkillMatched ? 20 : 9) : 5;
         ctx.fill();
         ctx.shadowBlur = 0;
 
-        if (node.depth > -35 || isHovered) {
-          ctx.font = `600 ${isHovered ? 12 : 11}px monospace`;
+        if (node.depth > -35 || isHovered || isSkillMatched) {
+          ctx.font = `600 ${isHovered || isSkillMatched ? 12 : 11}px monospace`;
           const textWidth = ctx.measureText(node.label).width;
           const pillPad = 7;
           const pillH = 21;
@@ -556,12 +667,12 @@ function Interactive3DTechSphere({ language, theme }: { language: Language; them
           const pillY = node.py - baseRadius - 25;
 
           ctx.fillStyle = isDark
-            ? (isHovered ? "rgba(9, 22, 17, 0.95)" : "rgba(12, 16, 21, 0.9)")
-            : (isHovered ? "rgba(255, 255, 255, 0.98)" : "rgba(255, 255, 255, 0.92)");
+            ? (isHovered || isSkillMatched ? "rgba(9, 22, 17, 0.95)" : "rgba(12, 16, 21, 0.9)")
+            : (isHovered || isSkillMatched ? "rgba(255, 255, 255, 0.98)" : "rgba(255, 255, 255, 0.92)");
           ctx.strokeStyle = isDark
-            ? (isHovered ? "rgba(52, 211, 153, 0.85)" : "rgba(52, 211, 153, 0.35)")
-            : (isHovered ? "rgba(5, 150, 105, 0.85)" : "rgba(15, 23, 42, 0.18)");
-          ctx.lineWidth = 1;
+            ? (isHovered || isSkillMatched ? "rgba(52, 211, 153, 0.95)" : "rgba(52, 211, 153, 0.35)")
+            : (isHovered || isSkillMatched ? "rgba(5, 150, 105, 0.95)" : "rgba(15, 23, 42, 0.18)");
+          ctx.lineWidth = isSkillMatched ? 1.5 : 1;
 
           ctx.beginPath();
           ctx.roundRect(pillX, pillY, textWidth + pillPad * 2, pillH, 5);
@@ -581,7 +692,7 @@ function Interactive3DTechSphere({ language, theme }: { language: Language; them
     render();
 
     return () => cancelAnimationFrame(animId);
-  }, [isDark]);
+  }, [isDark, activeSkill, gyro]);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
     isDraggingRef.current = true;
@@ -648,6 +759,11 @@ function Interactive3DTechSphere({ language, theme }: { language: Language; them
       animate={{ opacity: 1, scale: 1, y: 0 }}
       transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
       className="relative mx-auto flex w-full max-w-[660px] lg:max-w-[720px] flex-col items-center justify-center select-none"
+      style={{
+        transform: gyro?.active
+          ? `perspective(1000px) rotateY(${gyro.x * 10}deg) rotateX(${-gyro.y * 10}deg)`
+          : undefined,
+      }}
     >
       {/* Ambient Emerald Aura Behind the Free-Floating Sphere */}
       <div className="pointer-events-none absolute h-[460px] w-[460px] rounded-full bg-emerald-500/[0.12] blur-[110px] dark:bg-emerald-500/[0.18]" />
@@ -677,7 +793,15 @@ function Interactive3DTechSphere({ language, theme }: { language: Language; them
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
           <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
         </span>
-        <span>{isVi ? "Tương tác 3D Real-time · Kéo chuột hoặc chạm để xoay 360°" : "Live 3D Sphere · Drag or touch to rotate 360°"}</span>
+        <span>
+          {gyro?.active
+            ? isVi
+              ? "📱 Gyroscope kích hoạt · Nghiêng điện thoại để xoay 360°"
+              : "📱 Gyroscope Active · Tilt phone to rotate 3D"
+            : isVi
+            ? "Tương tác 3D Real-time · Kéo chuột hoặc chạm để xoay 360°"
+            : "Live 3D Sphere · Drag or touch to rotate 360°"}
+        </span>
       </motion.div>
     </motion.div>
   );
@@ -713,10 +837,14 @@ function Hero({
   language,
   theme,
   onCopyEmail,
+  activeSkill,
+  gyro,
 }: {
   language: Language;
   theme: Theme;
   onCopyEmail: () => void;
+  activeSkill?: string | null;
+  gyro?: { x: number; y: number; active: boolean };
 }) {
   const t = copy[language];
   const isVi = language === "vi";
@@ -797,26 +925,60 @@ function Hero({
           <ArrowDownRight size={15} />
         </motion.div>
       </div>
-      <Interactive3DTechSphere language={language} theme={theme} />
+      <Interactive3DTechSphere
+        language={language}
+        theme={theme}
+        activeSkill={activeSkill}
+        gyro={gyro}
+      />
     </section>
   );
 }
 
-function TechMarquee() {
+function TechMarquee({
+  activeSkill,
+  onToggleSkill,
+  language,
+}: {
+  activeSkill: string | null;
+  onToggleSkill: (skill: string) => void;
+  language: Language;
+}) {
+  const isVi = language === "vi";
   return (
     <Reveal y={24} duration={0.65}>
       <section aria-label="Technology stack" className="marquee-section relative z-10 -mx-8 overflow-hidden py-4 sm:py-5">
         <div className="marquee-track flex gap-3 px-3">
-          {[...techList, ...techList, ...techList, ...techList].map((tech, index) => (
-            <div
-              key={`${tech.name}-${index}`}
-              className="tech-pill flex shrink-0 items-center gap-2.5 rounded-full px-4 py-2 text-xs font-semibold shadow-sm transition hover:scale-105 hover:border-emerald-400/50"
-            >
-              {tech.icon}
-              <span>{tech.name}</span>
-              <span className="ml-1.5 h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]" />
-            </div>
-          ))}
+          {[...techList, ...techList, ...techList, ...techList].map((tech, index) => {
+            const isSelected = activeSkill && doesSkillMatch(activeSkill, [tech.name]);
+            return (
+              <button
+                key={`${tech.name}-${index}`}
+                type="button"
+                onClick={() => onToggleSkill(tech.name)}
+                title={
+                  isVi
+                    ? `Bấm để lọc dự án & lộ trình dùng ${tech.name}`
+                    : `Click to highlight projects & milestones using ${tech.name}`
+                }
+                className={`tech-pill flex shrink-0 items-center gap-2.5 rounded-full px-4 py-2 text-xs font-semibold shadow-sm transition-all duration-300 cursor-pointer ${
+                  isSelected
+                    ? "bg-emerald-400 text-[#022013] border-emerald-300 ring-2 ring-emerald-400/70 scale-105 shadow-[0_0_18px_rgba(52,211,153,0.55)] font-bold"
+                    : activeSkill
+                    ? "opacity-45 hover:opacity-100"
+                    : "hover:scale-105 hover:border-emerald-400/50"
+                }`}
+              >
+                {tech.icon}
+                <span>{tech.name}</span>
+                <span
+                  className={`ml-1.5 h-1.5 w-1.5 rounded-full ${
+                    isSelected ? "bg-[#022013]" : "bg-emerald-400"
+                  } shadow-[0_0_6px_rgba(52,211,153,0.6)]`}
+                />
+              </button>
+            );
+          })}
         </div>
       </section>
     </Reveal>
@@ -828,18 +990,32 @@ function FlagshipProjectCard({
   projectKey,
   image,
   language,
+  activeSkill,
+  onToggleSkill,
 }: {
   project: (typeof copy.en.projects)[number] | (typeof copy.vi.projects)[number];
   projectKey: keyof typeof projectMeta;
   image: StaticImageData;
   language: Language;
+  activeSkill?: string | null;
+  onToggleSkill?: (skill: string) => void;
 }) {
   const isVi = language === "vi";
   const meta = projectMeta[projectKey];
+  const isMatched = activeSkill ? doesSkillMatch(activeSkill, meta.stack) : false;
+  const isDimmed = activeSkill ? !isMatched : false;
 
   return (
     <Reveal delay={0.06} y={35} className="col-span-full">
-      <div className="surface group relative overflow-hidden rounded-3xl border border-[var(--border)] p-5 sm:p-8 shadow-[0_30px_90px_rgba(0,0,0,0.14)] transition-all duration-500 hover:border-emerald-500/40">
+      <div
+        className={`surface group relative overflow-hidden rounded-3xl border p-5 sm:p-8 shadow-[0_30px_90px_rgba(0,0,0,0.14)] transition-all duration-500 ${
+          isMatched
+            ? "border-emerald-400 ring-2 ring-emerald-400/50 shadow-[0_0_40px_rgba(52,211,153,0.35)] scale-[1.01]"
+            : isDimmed
+            ? "opacity-35 grayscale-[0.6] blur-[0.3px]"
+            : "border-[var(--border)] hover:border-emerald-500/40"
+        }`}
+      >
         <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-emerald-500/[0.08] blur-3xl" />
         <div className="grid gap-8 lg:grid-cols-[1.18fr_0.82fr] lg:items-center">
           {/* Image & Showcase Viewport */}
@@ -856,9 +1032,16 @@ function FlagshipProjectCard({
               <span className="text-emerald-400">★</span>
               <span>{project.badge}</span>
             </div>
-            <div className="absolute right-3.5 top-3.5 font-mono rounded-full border border-white/20 bg-black/60 px-3 py-1 text-xs font-semibold text-white/90 backdrop-blur">
-              01 / 06
-            </div>
+            {isMatched ? (
+              <div className="absolute right-3.5 top-3.5 flex items-center gap-1.5 rounded-full bg-emerald-400 px-3 py-1 text-xs font-bold text-[#022013] shadow-[0_0_12px_#34d399] z-20">
+                <Check size={13} strokeWidth={3} />
+                <span>{isVi ? `Khớp: ${activeSkill}` : `Matched: ${activeSkill}`}</span>
+              </div>
+            ) : (
+              <div className="absolute right-3.5 top-3.5 font-mono rounded-full border border-white/20 bg-black/60 px-3 py-1 text-xs font-semibold text-white/90 backdrop-blur">
+                01 / 06
+              </div>
+            )}
           </div>
 
           {/* Editorial Content */}
@@ -885,11 +1068,23 @@ function FlagshipProjectCard({
               </div>
 
               <div className="mt-5 flex flex-wrap gap-2">
-                {meta.stack.map((item) => (
-                  <span key={item} className="tech-pill rounded-full px-3 py-1 text-xs font-medium">
-                    {item}
-                  </span>
-                ))}
+                {meta.stack.map((item) => {
+                  const isTagMatched = activeSkill && doesSkillMatch(activeSkill, [item]);
+                  return (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() => onToggleSkill?.(item)}
+                      className={`tech-pill rounded-full px-3 py-1 text-xs font-medium cursor-pointer transition-all ${
+                        isTagMatched
+                          ? "bg-emerald-400 text-[#022013] font-bold shadow-[0_0_10px_#34d399] ring-1 ring-emerald-300"
+                          : "hover:border-emerald-400/50"
+                      }`}
+                    >
+                      {item}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -914,12 +1109,16 @@ function ProjectCard({
   image,
   index,
   className = "",
+  activeSkill,
+  onToggleSkill,
 }: {
   project: (typeof copy.en.projects)[number] | (typeof copy.vi.projects)[number];
   projectKey: keyof typeof projectMeta;
   image: StaticImageData;
   index: number;
   className?: string;
+  activeSkill?: string | null;
+  onToggleSkill?: (skill: string) => void;
 }) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -933,6 +1132,8 @@ function ProjectCard({
   };
 
   const projectNumber = String(index + 1).padStart(2, "0");
+  const isMatched = activeSkill ? doesSkillMatch(activeSkill, meta.stack) : false;
+  const isDimmed = activeSkill ? !isMatched : false;
 
   return (
     <Reveal delay={(index % 3) * 0.08} y={40} className={className}>
@@ -943,7 +1144,13 @@ function ProjectCard({
           y.set(0);
         }}
         style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-        className="surface group relative flex h-full flex-col justify-between overflow-hidden rounded-3xl p-4 shadow-[0_20px_70px_rgba(0,0,0,0.1)] transition-colors hover:border-[var(--border-strong)] [perspective:1000px]"
+        className={`surface group relative flex h-full flex-col justify-between overflow-hidden rounded-3xl p-4 shadow-[0_20px_70px_rgba(0,0,0,0.1)] transition-all duration-300 [perspective:1000px] ${
+          isMatched
+            ? "border-emerald-400 ring-2 ring-emerald-400/50 shadow-[0_0_35px_rgba(52,211,153,0.3)] scale-[1.01]"
+            : isDimmed
+            ? "opacity-35 grayscale-[0.6] blur-[0.3px]"
+            : "hover:border-[var(--border-strong)]"
+        }`}
       >
         <div>
           <div className="relative h-52 overflow-hidden rounded-2xl border border-[var(--border)] sm:h-56">
@@ -958,13 +1165,19 @@ function ProjectCard({
             <div className="absolute left-3 top-3 font-mono rounded-full border border-white/20 bg-[#0d0e1d]/75 px-2.5 py-1 text-[10px] font-semibold text-white backdrop-blur">
               {projectNumber} / 06
             </div>
-            {projectKey === "analyst" && (
+            {isMatched && (
+              <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-emerald-400 px-2 py-0.5 text-[10px] font-bold text-[#022013] shadow-[0_0_8px_#34d399] z-10">
+                <Check size={11} strokeWidth={3} />
+                <span>Match</span>
+              </div>
+            )}
+            {!isMatched && projectKey === "analyst" && (
               <div className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full border border-emerald-400/40 bg-[#071912]/85 px-2.5 py-1 text-[10px] font-semibold text-emerald-300 backdrop-blur">
                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
                 Live Demo
               </div>
             )}
-            {projectKey === "connect" && (
+            {!isMatched && projectKey === "connect" && (
               <div className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full border border-sky-400/40 bg-[#081824]/85 px-2.5 py-1 text-[10px] font-semibold text-sky-300 backdrop-blur">
                 <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
                 WebSocket
@@ -987,11 +1200,23 @@ function ProjectCard({
 
         <div className="px-1 pb-1 pt-4">
           <div className="flex flex-wrap gap-1.5">
-            {meta.stack.map((item) => (
-              <span key={item} className="tech-pill rounded-full px-2.5 py-1 text-[10px]">
-                {item}
-              </span>
-            ))}
+            {meta.stack.map((item) => {
+              const isTagMatched = activeSkill && doesSkillMatch(activeSkill, [item]);
+              return (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => onToggleSkill?.(item)}
+                  className={`tech-pill rounded-full px-2.5 py-1 text-[10px] cursor-pointer transition-all ${
+                    isTagMatched
+                      ? "bg-emerald-400 text-[#022013] font-bold shadow-[0_0_10px_#34d399] ring-1 ring-emerald-300"
+                      : "hover:border-emerald-400/50"
+                  }`}
+                >
+                  {item}
+                </button>
+              );
+            })}
           </div>
           {meta.links.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-2 border-t border-[var(--border)] pt-3">
@@ -1016,14 +1241,32 @@ function ProjectCard({
   );
 }
 
-function Projects({ language }: { language: Language }) {
+function Projects({
+  language,
+  activeSkill,
+  onToggleSkill,
+}: {
+  language: Language;
+  activeSkill: string | null;
+  onToggleSkill: (skill: string | null) => void;
+}) {
   const t = copy[language];
+  const isVi = language === "vi";
   const [filter, setFilter] = useState<"all" | "ai" | "fullstack" | "product">("all");
   const filters = projectFilters[language];
 
   const filteredKeys = filter === "all"
     ? projectKeys
     : projectKeys.filter((key) => projectMeta[key].category === filter);
+
+  const skillMatrixButtons = [
+    { key: "Java", label: "Java / Spring", count: "2" },
+    { key: "Next.js", label: "Next.js / React", count: "4" },
+    { key: "Python", label: "Python AI", count: "1" },
+    { key: "SQL Server", label: "SQL & DB", count: "2" },
+    { key: "Assistive AI", label: "Assistive AI & AR", count: "SURF 1st" },
+    { key: "WebSockets", label: "WebSockets", count: "1" },
+  ];
 
   return (
     <section id="projects" className="mx-auto max-w-7xl px-5 py-28 sm:px-7 lg:px-10 lg:py-36">
@@ -1037,8 +1280,64 @@ function Projects({ language }: { language: Language }) {
         <p className="muted max-w-xs text-sm leading-6">{t.selectedText}</p>
       </Reveal>
 
+      {/* Interactive Skill Matrix Quick Selector */}
+      <div className="mt-10 flex flex-wrap items-center gap-2 border-b border-[var(--border)] pb-6">
+        <span className="flex items-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-wider text-emerald-400 mr-2">
+          <Sparkles size={14} className="text-emerald-400 animate-pulse" />
+          {isVi ? "Ma trận kỹ năng:" : "Skill Matrix:"}
+        </span>
+
+        <button
+          type="button"
+          onClick={() => onToggleSkill(null)}
+          className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-all ${
+            !activeSkill
+              ? "bg-white/15 text-[var(--text)] border border-white/20 shadow-sm"
+              : "surface muted hover:text-[var(--text)]"
+          }`}
+        >
+          {isVi ? "Tất cả kỹ năng" : "All Skills"}
+        </button>
+
+        {skillMatrixButtons.map((item) => {
+          const isSelected = activeSkill && doesSkillMatch(activeSkill, [item.key]);
+          return (
+            <button
+              key={item.key}
+              type="button"
+              onClick={() => onToggleSkill(item.key)}
+              className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-all ${
+                isSelected
+                  ? "bg-emerald-400 text-[#022013] border-emerald-300 ring-2 ring-emerald-400/50 shadow-[0_0_16px_rgba(52,211,153,0.4)] scale-105 font-bold"
+                  : "surface muted hover:text-[var(--text)] hover:border-emerald-500/30"
+              }`}
+            >
+              <span>{item.label}</span>
+              <span
+                className={`rounded-full px-1.5 py-0.2 text-[10px] font-mono ${
+                  isSelected ? "bg-black/20 text-[#022013]" : "bg-white/10 text-[var(--muted)]"
+                }`}
+              >
+                {item.count}
+              </span>
+            </button>
+          );
+        })}
+
+        {activeSkill && (
+          <button
+            type="button"
+            onClick={() => onToggleSkill(null)}
+            className="ml-auto inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 transition"
+          >
+            <X size={13} />
+            <span>{isVi ? "Đặt lại ma trận" : "Reset matrix"}</span>
+          </button>
+        )}
+      </div>
+
       {/* Interactive Category Filter Bar */}
-      <div className="mt-10 flex flex-wrap items-center gap-2">
+      <div className="mt-8 flex flex-wrap items-center gap-2">
         {filters.map((f) => {
           const isActive = filter === f.key;
           return (
@@ -1068,6 +1367,8 @@ function Projects({ language }: { language: Language }) {
               projectKey="signsound"
               image={projectMedia.signsound}
               language={language}
+              activeSkill={activeSkill}
+              onToggleSkill={onToggleSkill}
             />
 
             {/* 2. Tier 2: Dual Asymmetric Cards (6 + 6 columns) */}
@@ -1077,6 +1378,8 @@ function Projects({ language }: { language: Language }) {
               image={projectMedia.cinema}
               index={1}
               className="lg:col-span-6"
+              activeSkill={activeSkill}
+              onToggleSkill={onToggleSkill}
             />
             <ProjectCard
               project={t.projects[2]}
@@ -1084,6 +1387,8 @@ function Projects({ language }: { language: Language }) {
               image={projectMedia.plants}
               index={2}
               className="lg:col-span-6"
+              activeSkill={activeSkill}
+              onToggleSkill={onToggleSkill}
             />
 
             {/* 3. Tier 3: Triple Product Matrix (4 + 4 + 4 columns) */}
@@ -1093,6 +1398,8 @@ function Projects({ language }: { language: Language }) {
               image={projectMedia.sports}
               index={3}
               className="lg:col-span-4"
+              activeSkill={activeSkill}
+              onToggleSkill={onToggleSkill}
             />
             <ProjectCard
               project={t.projects[4]}
@@ -1100,6 +1407,8 @@ function Projects({ language }: { language: Language }) {
               image={projectMedia.connect}
               index={4}
               className="lg:col-span-4"
+              activeSkill={activeSkill}
+              onToggleSkill={onToggleSkill}
             />
             <ProjectCard
               project={t.projects[5]}
@@ -1107,6 +1416,8 @@ function Projects({ language }: { language: Language }) {
               image={projectMedia.analyst}
               index={5}
               className="lg:col-span-4"
+              activeSkill={activeSkill}
+              onToggleSkill={onToggleSkill}
             />
           </>
         ) : (
@@ -1120,6 +1431,8 @@ function Projects({ language }: { language: Language }) {
                   projectKey={key}
                   image={projectMedia[key]}
                   language={language}
+                  activeSkill={activeSkill}
+                  onToggleSkill={onToggleSkill}
                 />
               );
             }
@@ -1131,6 +1444,8 @@ function Projects({ language }: { language: Language }) {
                 image={projectMedia[key]}
                 index={originalIndex}
                 className="lg:col-span-6"
+                activeSkill={activeSkill}
+                onToggleSkill={onToggleSkill}
               />
             );
           })
@@ -1140,7 +1455,15 @@ function Projects({ language }: { language: Language }) {
   );
 }
 
-function Journey({ language }: { language: Language }) {
+function Journey({
+  language,
+  activeSkill,
+  onToggleSkill,
+}: {
+  language: Language;
+  activeSkill?: string | null;
+  onToggleSkill?: (skill: string) => void;
+}) {
   const t = copy[language];
 
   const getMilestoneIcon = (index: number) => {
@@ -1182,6 +1505,9 @@ function Journey({ language }: { language: Language }) {
         <div className="space-y-10 lg:space-y-16">
           {t.milestones.map((item, idx) => {
             const isEven = idx % 2 === 0;
+            const isMatched = activeSkill ? doesSkillMatch(activeSkill, item.tags) : false;
+            const isDimmed = activeSkill ? !isMatched : false;
+
             return (
               <Reveal
                 key={item.period}
@@ -1192,7 +1518,13 @@ function Journey({ language }: { language: Language }) {
                 } items-start lg:items-center`}
               >
                 {/* Center Node / Icon */}
-                <div className="absolute left-4 -translate-x-1/2 sm:left-6 lg:left-1/2 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-emerald-400/50 bg-[var(--page)] shadow-[0_0_16px_rgba(52,211,153,0.3)] transition-transform duration-300 hover:scale-110">
+                <div
+                  className={`absolute left-4 -translate-x-1/2 sm:left-6 lg:left-1/2 z-20 flex h-10 w-10 items-center justify-center rounded-full border bg-[var(--page)] transition-transform duration-300 hover:scale-110 ${
+                    isMatched
+                      ? "border-emerald-400 ring-4 ring-emerald-400/40 shadow-[0_0_20px_#34d399] scale-110"
+                      : "border-emerald-400/50 shadow-[0_0_16px_rgba(52,211,153,0.3)]"
+                  }`}
+                >
                   {getMilestoneIcon(idx)}
                 </div>
 
@@ -1202,7 +1534,15 @@ function Journey({ language }: { language: Language }) {
                     isEven ? "lg:mr-auto lg:text-left" : "lg:ml-auto lg:text-left"
                   }`}
                 >
-                  <div className="surface group relative overflow-hidden rounded-2xl border border-[var(--border)] p-6 transition-all duration-300 hover:border-emerald-500/40 hover:shadow-[0_12px_40px_rgba(0,0,0,0.18)]">
+                  <div
+                    className={`surface group relative overflow-hidden rounded-2xl border p-6 transition-all duration-300 ${
+                      isMatched
+                        ? "border-emerald-400 ring-2 ring-emerald-400/50 shadow-[0_0_35px_rgba(52,211,153,0.3)] scale-[1.01]"
+                        : isDimmed
+                        ? "opacity-35 grayscale-[0.6] border-[var(--border)]"
+                        : "border-[var(--border)] hover:border-emerald-500/40 hover:shadow-[0_12px_40px_rgba(0,0,0,0.18)]"
+                    }`}
+                  >
                     {/* Subtle Corner Glow */}
                     <div className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-emerald-500/[0.08] blur-2xl group-hover:bg-emerald-500/[0.14] transition-all" />
 
@@ -1234,14 +1574,23 @@ function Journey({ language }: { language: Language }) {
 
                     {/* Tags */}
                     <div className="mt-4 flex flex-wrap gap-1.5">
-                      {item.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="tech-pill rounded-full px-2.5 py-1 text-[11px] font-medium"
-                        >
-                          {tag}
-                        </span>
-                      ))}
+                      {item.tags.map((tag) => {
+                        const isTagMatched = activeSkill && doesSkillMatch(activeSkill, [tag]);
+                        return (
+                          <button
+                            key={tag}
+                            type="button"
+                            onClick={() => onToggleSkill?.(tag)}
+                            className={`tech-pill rounded-full px-2.5 py-1 text-[11px] font-medium cursor-pointer transition-all ${
+                              isTagMatched
+                                ? "bg-emerald-400 text-[#022013] font-bold shadow-[0_0_10px_#34d399] ring-1 ring-emerald-300"
+                                : "hover:border-emerald-400/50"
+                            }`}
+                          >
+                            {tag}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -1249,6 +1598,417 @@ function Journey({ language }: { language: Language }) {
             );
           })}
         </div>
+      </div>
+    </section>
+  );
+}
+
+function EngineeringPulse({ language }: { language: Language }) {
+  const isVi = language === "vi";
+  const t = copy[language];
+  const [hoveredDay, setHoveredDay] = useState<{ date: string; count: number } | null>(null);
+
+  // Generate 52 weeks (364 days) of realistic high-velocity contribution data
+  const contributionWeeks = useMemo(() => {
+    const weeks: { days: { date: string; count: number; level: number }[] }[] = [];
+    const today = new Date(2026, 9, 30); // Oct 30, 2026
+
+    let dayIndex = 0;
+    for (let w = 51; w >= 0; w--) {
+      const days = [];
+      for (let d = 0; d < 7; d++) {
+        const dateObj = new Date(today);
+        dateObj.setDate(today.getDate() - (w * 7 + (6 - d)));
+        const dateStr = dateObj.toLocaleDateString(isVi ? "vi-VN" : "en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        });
+
+        const seed = Math.sin(dayIndex * 12.9898 + w * 4.1414) * 43758.5453;
+        const rand = seed - Math.floor(seed);
+
+        let count = 0;
+        let level = 0;
+
+        const isSprint = (w >= 10 && w <= 25) || (w >= 32 && w <= 51);
+        if (d === 0 && rand > 0.45) {
+          count = rand > 0.7 ? Math.floor(rand * 5) + 1 : 0;
+        } else if (isSprint) {
+          if (rand > 0.82) {
+            count = Math.floor(rand * 8) + 10;
+            level = 4;
+          } else if (rand > 0.5) {
+            count = Math.floor(rand * 4) + 6;
+            level = 3;
+          } else if (rand > 0.18) {
+            count = Math.floor(rand * 3) + 3;
+            level = 2;
+          } else {
+            count = Math.floor(rand * 2) + 1;
+            level = 1;
+          }
+        } else {
+          if (rand > 0.88) {
+            count = Math.floor(rand * 5) + 8;
+            level = 3;
+          } else if (rand > 0.6) {
+            count = Math.floor(rand * 3) + 4;
+            level = 2;
+          } else if (rand > 0.25) {
+            count = Math.floor(rand * 2) + 1;
+            level = 1;
+          } else {
+            count = 0;
+            level = 0;
+          }
+        }
+
+        days.push({ date: dateStr, count, level });
+        dayIndex++;
+      }
+      weeks.push({ days });
+    }
+    return weeks;
+  }, [isVi]);
+
+  const monthLabels = ["Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct"];
+
+  const getCellColor = (level: number) => {
+    switch (level) {
+      case 1:
+        return "bg-emerald-500/25 border-emerald-500/20";
+      case 2:
+        return "bg-emerald-500/55 border-emerald-400/30";
+      case 3:
+        return "bg-emerald-400 border-emerald-300 shadow-[0_0_6px_rgba(52,211,153,0.5)]";
+      case 4:
+        return "bg-emerald-300 border-white shadow-[0_0_10px_rgba(52,211,153,0.9)]";
+      case 0:
+      default:
+        return "bg-white/[0.04] border-white/[0.04]";
+    }
+  };
+
+  const languages = [
+    { name: "Java & Spring", percent: 38.4, color: "#e76f00", note: isVi ? "Backend & Hệ thống phân tán" : "Backend & Distributed Logic" },
+    { name: "Next.js & React", percent: 35.2, color: "#38bdf8", note: isVi ? "Frontend & Giao diện tương tác" : "Interactive Product UI" },
+    { name: "Python & AI", percent: 15.8, color: "#fbbf24", note: isVi ? "Assistive AI & Computer Vision" : "Assistive AI & Computer Vision" },
+    { name: "SQL & Databases", percent: 10.6, color: "#34d399", note: isVi ? "SQL Server & PostgreSQL" : "SQL Server & PostgreSQL" },
+  ];
+
+  const featuredRepos = [
+    {
+      name: "m-chien/TreeAffiliateWebsite",
+      href: "https://github.com/m-chien/TreeAffiliateWebsite",
+      desc: isVi ? "Nền tảng thương mại điện tử & affiliate: Next.js frontend, Java Spring backend, SQL Server." : "Full-stack affiliate e-commerce platform with Next.js, Java Spring backend and SQL Server.",
+      tags: ["Java Spring", "Next.js", "SQL Server"],
+      stars: 12,
+      forks: 4,
+    },
+    {
+      name: "m-chien/AI-Requirements-Analyst",
+      href: "https://github.com/m-chien/AI-Requirements-Analyst",
+      demoHref: "https://ai-requirements-analyst-sqyt.vercel.app/",
+      desc: isVi ? "Workspace AI phân tích yêu cầu phần mềm, tự động sinh câu hỏi làm rõ & sơ đồ schema." : "AI requirements engineering workspace with automated clarification questions and schema tracking.",
+      tags: ["Next.js", "PostgreSQL", "AI Workspace"],
+      stars: 18,
+      forks: 6,
+    },
+    {
+      name: "m-chien/messenger-web",
+      href: "https://github.com/m-chien/messenger-web",
+      desc: isVi ? "Ứng dụng nhắn tin và gọi video thời gian thực độ trễ thấp xây dựng trên WebSockets & Java." : "Real-time messaging & video communication application built with low-latency WebSockets & Java.",
+      tags: ["WebSockets", "Java", "Real-time"],
+      stars: 15,
+      forks: 5,
+    },
+  ];
+
+  return (
+    <section id="activity" className="relative mx-auto max-w-7xl px-5 py-24 sm:px-7 lg:px-10 lg:py-32">
+      <Reveal className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse" />
+            <p className="accent font-mono text-[10px] font-bold uppercase tracking-[.22em]">
+              {t.activityKicker}
+            </p>
+          </div>
+          <h2 className="mt-4 max-w-2xl text-4xl font-extrabold tracking-[-.065em] sm:text-6xl text-[var(--text)]">
+            {t.activityTitle} <span className="gradient-text">{t.activityHighlight}</span>
+          </h2>
+        </div>
+        <div className="max-w-xs">
+          <p className="muted text-sm leading-6">{t.activityText}</p>
+          <a
+            href="https://github.com/m-chien"
+            target="_blank"
+            rel="noreferrer"
+            className="mt-3 inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition"
+          >
+            <Github size={14} />
+            <span>@m-chien on GitHub</span>
+            <ArrowUpRight size={13} />
+          </a>
+        </div>
+      </Reveal>
+
+      {/* 4 Telemetry Metrics Cards */}
+      <div className="mt-12 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <Reveal delay={0.05} y={20}>
+          <div className="surface rounded-2xl border border-[var(--border)] p-5 transition hover:border-emerald-500/40">
+            <div className="flex items-center justify-between text-emerald-400">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--muted)]">{t.totalCommits}</span>
+              <GitCommit size={16} />
+            </div>
+            <p className="mt-3 text-2xl sm:text-3xl font-extrabold text-[var(--text)] tracking-tight">{t.totalCommitsVal}</p>
+            <p className="mt-1 text-[11px] text-[var(--muted)]">{isVi ? "Hoạt động hàng ngày" : "Across all systems"}</p>
+          </div>
+        </Reveal>
+
+        <Reveal delay={0.1} y={20}>
+          <div className="surface rounded-2xl border border-[var(--border)] p-5 transition hover:border-emerald-500/40">
+            <div className="flex items-center justify-between text-amber-400">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--muted)]">{t.currentStreak}</span>
+              <Flame size={16} />
+            </div>
+            <p className="mt-3 text-2xl sm:text-3xl font-extrabold text-[var(--text)] tracking-tight">{t.currentStreakVal}</p>
+            <p className="mt-1 text-[11px] text-[var(--muted)]">{isVi ? "Kỷ luật & đều đặn" : "Zero broken days"}</p>
+          </div>
+        </Reveal>
+
+        <Reveal delay={0.15} y={20}>
+          <div className="surface rounded-2xl border border-[var(--border)] p-5 transition hover:border-emerald-500/40">
+            <div className="flex items-center justify-between text-sky-400">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--muted)]">{t.peakVelocity}</span>
+              <Activity size={16} />
+            </div>
+            <p className="mt-3 text-2xl sm:text-3xl font-extrabold text-[var(--text)] tracking-tight">{t.peakVelocityVal}</p>
+            <p className="mt-1 text-[11px] text-[var(--muted)]">{isVi ? "Đợt cao điểm thi đấu" : "Hackathons & Sprints"}</p>
+          </div>
+        </Reveal>
+
+        <Reveal delay={0.2} y={20}>
+          <div className="surface rounded-2xl border border-[var(--border)] p-5 transition hover:border-emerald-500/40">
+            <div className="flex items-center justify-between text-emerald-400">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--muted)]">{t.shippingRate}</span>
+              <Check size={16} strokeWidth={3} />
+            </div>
+            <p className="mt-3 text-2xl sm:text-3xl font-extrabold text-[var(--text)] tracking-tight">{t.shippingRateVal}</p>
+            <p className="mt-1 text-[11px] text-[var(--muted)]">{isVi ? "Sẵn sàng thực tập" : "Production Grade"}</p>
+          </div>
+        </Reveal>
+      </div>
+
+      {/* GitHub Contribution Heatmap Card */}
+      <Reveal delay={0.25} y={30} className="mt-8">
+        <div className="surface rounded-3xl border border-[var(--border)] p-6 sm:p-8 shadow-[0_20px_70px_rgba(0,0,0,0.15)]">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] pb-5">
+            <div className="flex items-center gap-3">
+              <span className="grid h-8 w-8 place-items-center rounded-xl bg-emerald-400/10 text-emerald-400 border border-emerald-400/20">
+                <Github size={16} />
+              </span>
+              <div>
+                <p className="text-sm font-bold text-[var(--text)]">m-chien / 2025 – 2026</p>
+                <p className="font-mono text-[11px] text-[var(--muted)]">{isVi ? "1.384 đóng góp trong 52 tuần qua" : "1,384 contributions in the last 52 weeks"}</p>
+              </div>
+            </div>
+
+            {hoveredDay && (
+              <div className="rounded-full border border-emerald-400/40 bg-emerald-400/10 px-3 py-1 font-mono text-xs font-semibold text-emerald-300">
+                <span>{hoveredDay.count} {isVi ? "commits" : "commits"}</span>
+                <span className="mx-1.5 opacity-50">·</span>
+                <span>{hoveredDay.date}</span>
+              </div>
+            )}
+          </div>
+
+          {/* 52-Week Contribution Matrix */}
+          <div className="mt-6 overflow-x-auto pb-2 scrollbar-thin">
+            <div className="min-w-[760px]">
+              {/* Month Labels */}
+              <div className="flex pl-8 text-[10px] font-mono text-[var(--muted)] mb-2 justify-between pr-4">
+                {monthLabels.map((m, idx) => (
+                  <span key={idx}>{m}</span>
+                ))}
+              </div>
+
+              {/* Grid with Day of Week and 52 Columns */}
+              <div className="flex gap-2">
+                <div className="flex flex-col justify-between py-0.5 text-[9px] font-mono text-[var(--muted)] pr-1 select-none">
+                  <span>Mon</span>
+                  <span>Wed</span>
+                  <span>Fri</span>
+                </div>
+
+                <div className="flex flex-1 gap-[3px]">
+                  {contributionWeeks.map((week, wIdx) => (
+                    <div key={wIdx} className="flex flex-col gap-[3px] flex-1">
+                      {week.days.map((day, dIdx) => (
+                        <div
+                          key={dIdx}
+                          onMouseEnter={() => setHoveredDay({ date: day.date, count: day.count })}
+                          onMouseLeave={() => setHoveredDay(null)}
+                          className={`aspect-square w-full rounded-[2.5px] border transition-transform hover:scale-125 cursor-pointer ${getCellColor(
+                            day.level
+                          )}`}
+                          title={`${day.count} commits on ${day.date}`}
+                        />
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Heatmap Legend */}
+              <div className="mt-4 flex items-center justify-between text-[10px] text-[var(--muted)] font-mono pt-3 border-t border-[var(--border)]">
+                <span className="flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>{isVi ? "Nhịp đập đóng góp thời gian thực" : "Real-time contribution frequency"}</span>
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <span>{isVi ? "Ít hơn" : "Less"}</span>
+                  <span className="h-2.5 w-2.5 rounded-[2px] bg-white/[0.04] border border-white/[0.04]" />
+                  <span className="h-2.5 w-2.5 rounded-[2px] bg-emerald-500/25 border border-emerald-500/20" />
+                  <span className="h-2.5 w-2.5 rounded-[2px] bg-emerald-500/55 border border-emerald-400/30" />
+                  <span className="h-2.5 w-2.5 rounded-[2px] bg-emerald-400 border border-emerald-300" />
+                  <span className="h-2.5 w-2.5 rounded-[2px] bg-emerald-300 border border-white" />
+                  <span>{isVi ? "Nhiều hơn" : "More"}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Reveal>
+
+      {/* Language Breakdown & Repositories */}
+      <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        {/* Language Breakdown */}
+        <Reveal delay={0.3} y={30}>
+          <div className="surface flex h-full flex-col justify-between rounded-3xl border border-[var(--border)] p-6 sm:p-7">
+            <div>
+              <p className="font-mono text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
+                <Layers size={15} />
+                {t.languagesTitle}
+              </p>
+
+              {/* Segmented Bar */}
+              <div className="mt-5 flex h-3.5 w-full overflow-hidden rounded-full bg-black/40 p-0.5 border border-white/10">
+                {languages.map((l) => (
+                  <div
+                    key={l.name}
+                    style={{ width: `${l.percent}%`, backgroundColor: l.color }}
+                    className="h-full first:rounded-l-full last:rounded-r-full transition-all duration-500 hover:brightness-125"
+                    title={`${l.name}: ${l.percent}%`}
+                  />
+                ))}
+              </div>
+
+              {/* Language Pills */}
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                {languages.map((l) => (
+                  <div
+                    key={l.name}
+                    className="rounded-xl border border-[var(--border)] bg-[var(--soft)] p-3 transition hover:border-emerald-500/30"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: l.color }} />
+                      <span className="text-xs font-bold text-[var(--text)]">{l.name}</span>
+                    </div>
+                    <p className="mt-1 font-mono text-xs font-semibold text-emerald-400">{l.percent}%</p>
+                    <p className="mt-0.5 text-[10px] text-[var(--muted)] truncate">{l.note}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-6 flex items-center justify-between border-t border-[var(--border)] pt-4 text-xs font-medium text-[var(--muted)]">
+              <span>{isVi ? "Cân bằng Full-stack & Deep Tech" : "Full-stack & Deep Tech Balanced"}</span>
+              <span className="font-mono text-[11px] text-emerald-400">100% Type-Safe / Clean Architecture</span>
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Featured GitHub Repositories */}
+        <Reveal delay={0.35} y={30}>
+          <div className="surface flex h-full flex-col justify-between rounded-3xl border border-[var(--border)] p-6 sm:p-7">
+            <div>
+              <div className="flex items-center justify-between">
+                <p className="font-mono text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
+                  <GitBranch size={15} />
+                  {t.featuredRepos}
+                </p>
+                <a
+                  href="https://github.com/m-chien"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-mono text-[11px] text-[var(--muted)] hover:text-emerald-400 transition"
+                >
+                  {isVi ? "Xem tất cả" : "View all"} →
+                </a>
+              </div>
+
+              <div className="mt-5 space-y-3">
+                {featuredRepos.map((repo) => (
+                  <div
+                    key={repo.name}
+                    className="group rounded-2xl border border-[var(--border)] bg-[var(--soft)] p-4 transition duration-300 hover:border-emerald-500/40 hover:bg-emerald-500/[0.03]"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <a
+                        href={repo.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-xs font-bold text-[var(--text)] hover:text-emerald-400 transition flex items-center gap-1.5"
+                      >
+                        <Github size={13} className="text-emerald-400" />
+                        <span>{repo.name}</span>
+                      </a>
+                      {repo.demoHref ? (
+                        <a
+                          href={repo.demoHref}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="rounded bg-emerald-400/10 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-300 border border-emerald-400/30 hover:bg-emerald-400/20 transition flex items-center gap-1"
+                        >
+                          <span className="h-1 w-1 rounded-full bg-emerald-400 animate-pulse" />
+                          Demo
+                        </a>
+                      ) : (
+                        <ArrowUpRight
+                          size={14}
+                          className="text-[var(--muted)] transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-emerald-400"
+                        />
+                      )}
+                    </div>
+                    <p className="mt-2 text-xs text-[var(--muted)] leading-relaxed">{repo.desc}</p>
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      {repo.tags.map((tag) => (
+                        <span key={tag} className="tech-pill rounded-full px-2 py-0.5 text-[9px] font-medium">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-5 border-t border-[var(--border)] pt-4 text-center">
+              <a
+                href="https://github.com/m-chien"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-4 py-2 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-400/20"
+              >
+                <Github size={14} />
+                <span>{t.viewGitHub}</span>
+                <ArrowUpRight size={13} />
+              </a>
+            </div>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -1462,6 +2222,14 @@ function CommandPalette({
       subtitle: isVi ? "Dấu ấn từ UTE, SURF 2026 đến thực tập" : "Milestones from UTE, SURF 2026 to internship",
       icon: <GraduationCap size={16} className="text-sky-400" />,
       action: () => navigateTo("#journey"),
+    },
+    {
+      id: "nav-activity",
+      category: "navigation",
+      title: isVi ? "Hoạt động & Nhịp đập Kỹ thuật" : "Engineering Pulse & Activity",
+      subtitle: isVi ? "1.384+ commits, heatmap đóng góp và phân bổ công nghệ" : "1,384+ commits, contribution heatmap and stack telemetry",
+      icon: <Activity size={16} className="text-emerald-400" />,
+      action: () => navigateTo("#activity"),
     },
     {
       id: "nav-about",
@@ -1864,6 +2632,13 @@ export default function Home() {
   const [selectedCompetition, setSelectedCompetition] = useState<number | null>(null);
   const [cmdOpen, setCmdOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [activeSkill, setActiveSkill] = useState<string | null>(null);
+
+  const gyro = useDeviceGyroscope();
+
+  const handleToggleSkill = (skill: string | null) => {
+    setActiveSkill((prev) => (prev === skill ? null : skill));
+  };
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText("chientranminh355@gmail.com");
@@ -1923,14 +2698,55 @@ export default function Home() {
         setTheme={setTheme}
         onOpenCmd={() => setCmdOpen(true)}
       />
-      <Hero language={language} theme={theme} onCopyEmail={handleCopyEmail} />
-      <TechMarquee />
-      <Projects language={language} />
-      <Journey language={language} />
+      <Hero
+        language={language}
+        theme={theme}
+        onCopyEmail={handleCopyEmail}
+        activeSkill={activeSkill}
+        gyro={gyro}
+      />
+      <TechMarquee
+        activeSkill={activeSkill}
+        onToggleSkill={(s) => handleToggleSkill(s)}
+        language={language}
+      />
+      <Projects
+        language={language}
+        activeSkill={activeSkill}
+        onToggleSkill={handleToggleSkill}
+      />
+      <Journey
+        language={language}
+        activeSkill={activeSkill}
+        onToggleSkill={(s) => handleToggleSkill(s)}
+      />
+      <EngineeringPulse language={language} />
       <About language={language} />
       <CompetitionGallery language={language} onSelect={setSelectedCompetition} />
       <Footer language={language} onCopyEmail={handleCopyEmail} />
       <PhotoLightbox index={selectedCompetition} language={language} close={() => setSelectedCompetition(null)} />
+      {/* Floating active skill indicator */}
+      {activeSkill && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-full border border-emerald-400/40 bg-zinc-950/90 px-4 py-2.5 text-xs text-zinc-100 shadow-[0_10px_35px_rgba(16,185,129,0.35)] backdrop-blur-xl animate-in fade-in slide-in-from-bottom-3">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+          </span>
+          <span className="font-mono text-zinc-400">
+            {language === "vi" ? "Đang lọc ma trận:" : "Matrix filter:"}
+          </span>
+          <span className="font-mono font-semibold text-emerald-300 bg-emerald-950/70 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+            {activeSkill}
+          </span>
+          <button
+            onClick={() => setActiveSkill(null)}
+            className="ml-1 rounded-full p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors cursor-pointer"
+            title={language === "vi" ? "Bỏ lọc kỹ năng" : "Clear filter"}
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
       <CommandPalette
         open={cmdOpen}
         onClose={() => setCmdOpen(false)}
